@@ -1,0 +1,32 @@
+import RegisterForm from "@/components/forms/register-form";
+import Image from "next/image";
+
+function Register() {
+  return (
+    <div className="w-full lg:grid min-h-screen lg:grid-cols-2">
+      <div className="flex items-center justify-center py-12">
+        <div className="mx-auto grid w-[350px] gap-16">
+          <div className="grid gap-2 text-center">
+            <h1 className="text-3xl font-bold">Create Account</h1>
+            <p className="text-balance text-muted-foreground">
+              Enter your details below to create your account
+            </p>
+          </div>
+
+          <RegisterForm />
+        </div>
+      </div>
+      <div className="hidden bg-muted lg:block">
+        <Image
+          src="https://source.unsplash.com/1920x1080/?nature"
+          alt="Image"
+          width="1920"
+          height="1080"
+          className="h-full w-full object-cover"
+        />
+      </div>
+    </div>
+  );
+}
+
+export default Register;
