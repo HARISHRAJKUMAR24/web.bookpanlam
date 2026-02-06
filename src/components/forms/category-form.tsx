@@ -174,11 +174,11 @@ const CategoryForm = ({ categoryId, categoryData, isEdit, userId }: CategoryForm
       </div>
 
       <Sticky>
-        <Button onClick={handleSave} disabled={isLoading} isLoading={isLoading}>
-          Save
-        </Button>
+          <Button onClick={handleSave} disabled={isLoading} isLoading={isLoading}>
+            Save
+          </Button>
       </Sticky>
-      
+
     </>
   );
 };

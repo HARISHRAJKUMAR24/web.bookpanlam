@@ -162,75 +162,61 @@ export default function ItemCategoriesClient() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       {/* HEADER */}
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div className="mb-6 sm:mb-8 lg:mb-10">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg shadow-lg">
-                  <FolderOpen className="h-6 w-6 text-white" />
+                <div className="p-2 sm:p-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg shadow-lg">
+                  <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">Item Categories</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Item Categories</h1>
               </div>
-              <p className="text-gray-600 ml-12">
+              <p className="text-gray-600 text-sm sm:text-base ml-0 sm:ml-12 mt-2 sm:mt-0">
                 Organize your menu items into categories for better management
               </p>
             </div>
             <button
               onClick={() => setOpen(true)}
               disabled={processing}
-              className="group relative flex items-center gap-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-5 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+              className="group relative flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden w-full sm:w-auto"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
               {processing ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               ) : (
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
-              <span className="relative">Add New Category</span>
+              <span className="relative text-sm sm:text-base">Add New Category</span>
             </button>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Total Categories</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{categories.length}</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-500">Total Categories</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">{categories.length}</p>
                 </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
-                  <FolderOpen className="h-6 w-6 text-purple-600" />
+                <div className="p-2 sm:p-3 bg-purple-50 rounded-lg">
+                  <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Categories with Items</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500">Categories with Items</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 sm:mt-2">
                     {categories.filter(c => c.items > 0).length}
                   </p>
                 </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Empty Categories</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">
-                    {categories.filter(c => c.items === 0).length}
-                  </p>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <AlertCircle className="h-6 w-6 text-gray-600" />
+                <div className="p-2 sm:p-3 bg-green-50 rounded-lg">
+                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
               </div>
             </div>
@@ -238,42 +224,39 @@ export default function ItemCategoriesClient() {
         </div>
 
         {/* TABLE CONTAINER */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 overflow-hidden">
           {/* TABLE HEADER */}
-          <div className="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+          <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-2 bg-gray-100 rounded-lg">
-                  <FolderOpen className="h-5 w-5 text-gray-700" />
+                  <FolderOpen className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">All Categories</h2>
-                  <p className="text-gray-500 text-sm mt-1">
-                    Manage and organize your menu item categories
-                  </p>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">All Categories</h2>
                 </div>
               </div>
-              <span className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">
+              <span className="px-2 py-1 sm:px-3 sm:py-1.5 bg-gray-100 text-gray-700 text-xs sm:text-sm font-semibold rounded-full self-start sm:self-auto">
                 {categories.length} total
               </span>
             </div>
           </div>
 
           {/* TABLE */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full min-w-[640px] sm:min-w-0">
               <thead className="bg-gray-50/80 backdrop-blur-sm">
                 <tr>
-                  <th className="px-8 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                  <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                     Category Name
                   </th>
-                  <th className="px-8 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                  <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                     Menu Items
                   </th>
-                  <th className="px-8 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                  <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                     Status
                   </th>
-                  <th className="px-8 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                  <th className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider border-b border-gray-200">
                     Actions
                   </th>
                 </tr>
@@ -281,33 +264,33 @@ export default function ItemCategoriesClient() {
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="px-8 py-12 text-center">
-                      <div className="flex flex-col items-center justify-center gap-4">
+                    <td colSpan={4} className="px-4 sm:px-8 py-8 sm:py-12 text-center">
+                      <div className="flex flex-col items-center justify-center gap-3 sm:gap-4">
                         <div className="relative">
-                          <div className="h-12 w-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                          <div className="h-10 w-10 sm:h-12 sm:w-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
                         </div>
                         <div>
-                          <p className="text-gray-700 font-medium">Loading categories</p>
-                          <p className="text-gray-500 text-sm mt-1">Please wait while we fetch your data</p>
+                          <p className="text-gray-700 font-medium text-sm sm:text-base">Loading categories</p>
+                          <p className="text-gray-500 text-xs sm:text-sm mt-1">Please wait while we fetch your data</p>
                         </div>
                       </div>
                     </td>
                   </tr>
                 ) : categories.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-8 py-16 text-center">
-                      <div className="flex flex-col items-center justify-center gap-6">
-                        <div className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl">
-                          <FolderOpen className="h-16 w-16 text-purple-400" />
+                    <td colSpan={4} className="px-4 sm:px-8 py-8 sm:py-16 text-center">
+                      <div className="flex flex-col items-center justify-center gap-4 sm:gap-6">
+                        <div className="p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl sm:rounded-2xl">
+                          <FolderOpen className="h-12 w-12 sm:h-16 sm:w-16 text-purple-400" />
                         </div>
                         <div className="max-w-md">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">No categories found</h3>
-                          <p className="text-gray-600 mb-6">
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">No categories found</h3>
+                          <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
                             Start organizing your menu by creating categories. This helps customers find items easily and improves menu navigation.
                           </p>
                           <button
                             onClick={() => setOpen(true)}
-                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base w-full sm:w-auto"
                           >
                             Create Your First Category
                           </button>
@@ -317,27 +300,27 @@ export default function ItemCategoriesClient() {
                   </tr>
                 ) : (
                   categories.map((cat) => (
-                    <tr 
-                      key={cat.id} 
+                    <tr
+                      key={cat.id}
                       className="group hover:bg-gradient-to-r hover:from-purple-50/30 hover:to-indigo-50/30 transition-all duration-300"
                     >
-                      <td className="px-8 py-5">
-                        <div className="flex items-center gap-4">
-                          <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl group-hover:from-purple-200 group-hover:to-purple-100 transition-colors">
-                            <FolderOpen className="h-5 w-5 text-purple-600" />
+                      <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg sm:rounded-xl group-hover:from-purple-200 group-hover:to-purple-100 transition-colors">
+                            <FolderOpen className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                           </div>
                           <div>
-                            <span className="text-gray-900 font-semibold text-lg block">{cat.name}</span>
-                            <span className="text-gray-500 text-sm">ID: {cat.id}</span>
+                            <span className="text-gray-900 font-semibold text-base sm:text-lg block">{cat.name}</span>
+                            <span className="text-gray-500 text-xs sm:text-sm">ID: {cat.id}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-5">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <div className={`
-                            px-4 py-2 rounded-lg font-medium text-sm
-                            ${cat.items > 0 
-                              ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-100' 
+                            px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg font-medium text-xs sm:text-sm
+                            ${cat.items > 0
+                              ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-100'
                               : 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 border border-gray-200'
                             }
                           `}>
@@ -346,42 +329,42 @@ export default function ItemCategoriesClient() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-5">
+                      <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
                         <div className="flex items-center gap-2">
                           <div className={`
                             w-2 h-2 rounded-full
                             ${cat.items > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}
                           `}></div>
-                          <span className={`text-sm font-medium ${cat.items > 0 ? 'text-green-700' : 'text-gray-500'}`}>
+                          <span className={`text-xs sm:text-sm font-medium ${cat.items > 0 ? 'text-green-700' : 'text-gray-500'}`}>
                             {cat.items > 0 ? 'Active' : 'Empty'}
                           </span>
                         </div>
                       </td>
-                      <td className="px-8 py-5">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
+                        <div className="flex items-center gap-2 sm:gap-3">
                           <button
                             onClick={() => setEdit(cat)}
                             disabled={processing}
-                            className="group/edit flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 transition-all duration-300 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="group/edit flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md sm:rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:border-blue-300 hover:text-blue-700 transition-all duration-300 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <Edit2 className="h-4 w-4 group-hover/edit:scale-110 transition-transform" />
-                            Edit
+                            <Edit2 className="h-3 w-3 sm:h-4 sm:w-4 group-hover/edit:scale-110 transition-transform" />
+                            <span className="hidden xs:inline">Edit</span>
                           </button>
                           <button
                             onClick={() => handleDeleteClick(cat)}
                             disabled={processing}
                             className={`
-                              group/delete flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 shadow-sm hover:shadow
-                              ${cat.items > 0 
-                                ? 'text-gray-500 bg-gray-100 border border-gray-300 cursor-not-allowed' 
+                              group/delete flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg transition-all duration-300 shadow-sm hover:shadow
+                              ${cat.items > 0
+                                ? 'text-gray-500 bg-gray-100 border border-gray-300 cursor-not-allowed'
                                 : 'text-red-600 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 hover:from-red-100 hover:to-pink-100 hover:border-red-300 hover:text-red-700'
                               }
                               disabled:opacity-50 disabled:cursor-not-allowed
                             `}
                             title={cat.items > 0 ? `Cannot delete: Contains ${cat.items} item${cat.items !== 1 ? 's' : ''}` : "Delete category"}
                           >
-                            <Trash2 className={`h-4 w-4 ${cat.items > 0 ? '' : 'group-hover/delete:scale-110 transition-transform'}`} />
-                            {cat.items > 0 ? 'Locked' : 'Delete'}
+                            <Trash2 className={`h-3 w-3 sm:h-4 sm:w-4 ${cat.items > 0 ? '' : 'group-hover/delete:scale-110 transition-transform'}`} />
+                            <span className="hidden xs:inline">{cat.items > 0 ? 'Locked' : 'Delete'}</span>
                           </button>
                         </div>
                       </td>
@@ -391,27 +374,6 @@ export default function ItemCategoriesClient() {
               </tbody>
             </table>
           </div>
-
-          {/* TABLE FOOTER */}
-          {categories.length > 0 && (
-            <div className="px-8 py-4 border-t border-gray-200 bg-gray-50/50">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span>{categories.filter(c => c.items > 0).length} active categories</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-                    <span>{categories.filter(c => c.items === 0).length} empty categories</span>
-                  </div>
-                </div>
-                <div className="text-gray-700 font-medium">
-                  Total items across all categories: {categories.reduce((sum, cat) => sum + cat.items, 0)}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
