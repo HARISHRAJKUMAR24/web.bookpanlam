@@ -136,7 +136,7 @@ export interface CategoryFormProps {
   categoryData: Category | null;
   isEdit: boolean;
   userId: number;         // ✔ remove null
-  
+
 }
 
 export type Department = {
@@ -854,9 +854,9 @@ export type couponData = {
   code: string;
   discountType: string;
   discount: number;
-  startDate: Date | null;
-  endDate: Date | null;
-  usageLimit: number | null;
+  startDate: string | Date | null;  // Add string type
+  endDate: string | Date | null;    // Add string type
+  usageLimit?: number | null;
   minBookingAmount: number | null;
 };
 

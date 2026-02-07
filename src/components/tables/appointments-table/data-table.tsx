@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -16,7 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Pagination from "./pagination";
-import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,11 +35,16 @@ export function DataTable<TData, TValue>({
   const safeRecords = Array.isArray(data.records) ? data.records : [];
 
   // Check screen size for responsive adjustments
-  if (typeof window !== 'undefined') {
-    useState(() => {
+  useEffect(() => {
+    const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
-    });
-  }
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const table = useReactTable({
     data: safeRecords,
@@ -52,7 +57,8 @@ export function DataTable<TData, TValue>({
   return (
     <div className="bg-white rounded-xl overflow-hidden">
       <div className="p-4 sm:p-5 overflow-x-auto">
-        <div className="min-w-[800px] lg:min-w-full">
+        {/* Remove the fixed min-width and let it be responsive */}
+        <div className={isMobile ? "min-w-max" : "w-full"}>
           <Table className="w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -112,15 +118,6 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
         </div>
-
-        {/* Mobile Scroll Hint */}
-        {isMobile && rows.length > 0 && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg text-center">
-            <p className="text-xs text-gray-600">
-              ← Scroll horizontally to view all columns →
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="p-4 sm:p-5 border-t">

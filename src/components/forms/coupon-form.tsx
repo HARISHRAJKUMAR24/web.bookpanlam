@@ -94,40 +94,51 @@ if (startDate && endDate) {
     return true;
   };
 
-  const handleSave = async () => {
-    // Validate form before saving
-    if (!validateForm()) {
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-const data = {
-  name,
-  code,
-  discountType,
-  discount,
-  startDate: startDate ? startDate : null,
-  endDate: endDate ? endDate : null,
-  usageLimit: usageLimit === "" ? null : Number(usageLimit),
-  minBookingAmount: minBookingAmount === "" ? null : Number(minBookingAmount),
-};
-
-      const response = !isEdit
-        ? await addCoupon(data)
-        : await updateCoupon(couponId, data);
-
-      handleToast(response);
-      !isEdit &&
-        response.success &&
-        router.push(`/coupons?${Math.floor(Math.random() * 100)}`);
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred while saving the coupon");
-    }
+const handleSave = async () => {
+  // Validate form before saving
+  if (!validateForm()) {
     setIsLoading(false);
-  };
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Format dates for backend
+    const formatDateForBackend = (date: Date | null) => {
+      if (!date) return null;
+      // Format as YYYY-MM-DDTHH:mm:ss.sssZ (ISO string)
+      return date.toISOString();
+    };
+
+    const data = {
+      name,
+      code,
+      discountType,
+      discount,
+      startDate: startDate ? formatDateForBackend(startDate) : null,
+      endDate: endDate ? formatDateForBackend(endDate) : null,
+      usageLimit: usageLimit === "" ? null : Number(usageLimit),
+      minBookingAmount: minBookingAmount === "" ? null : Number(minBookingAmount),
+    };
+
+    // Debug: Log what's being sent
+    console.log("Sending data:", data);
+
+    const response = !isEdit
+      ? await addCoupon(data)
+      : await updateCoupon(couponId, data);
+
+    handleToast(response);
+    !isEdit &&
+      response.success &&
+      router.push(`/coupons?${Math.floor(Math.random() * 100)}`);
+  } catch (error: any) {
+    console.error("Save error:", error);
+    toast.error(error.message || "An error occurred while saving the coupon");
+  }
+  setIsLoading(false);
+};
 
   return (
     <>
