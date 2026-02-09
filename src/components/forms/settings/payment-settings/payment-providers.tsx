@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 import PaymentMethodCard from "@/components/cards/payment-method-card";
 import { InputField, siteSettings } from "@/types";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { getPaymentSettings } from "@/lib/api/site-settings";
+import { getPaymentSettings, updateSiteSettings } from "@/lib/api/site-settings";
+import { Button } from "@/components/ui/button";
+import { Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
 
 import { CreditCard, Smartphone, Wallet } from "lucide-react";
 
@@ -19,6 +22,8 @@ const PaymentProviders = () => {
      DB SETTINGS (SOURCE OF TRUTH)
   =============================== */
   const [settings, setSettings] = useState<siteSettings | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   /* ===============================
      RAZORPAY
@@ -48,21 +53,8 @@ const PaymentProviders = () => {
   const [cashInHand, setCashInHand] = useState(false);
 
   /* ===============================
-     FETCH FROM DB (ON REFRESH)
+     FETCH FROM DB
   =============================== */
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const res = await getPaymentSettings();
-
-      console.log("✅ RAW API RESPONSE:", res);
-      console.log("✅ RESPONSE.DATA:", res?.data);
-    };
-
-    fetchSettings();
-  }, []);
-
-
   useEffect(() => {
     const fetchSettings = async () => {
       const res = await getPaymentSettings();
@@ -70,6 +62,7 @@ const PaymentProviders = () => {
 
       if (res?.success && res.data) {
         setSettings(res.data);
+        setHasChanges(false);
       }
     };
 
@@ -107,10 +100,46 @@ const PaymentProviders = () => {
   }, [settings]);
 
   /* ===============================
-     HELPERS
+     DETECT CHANGES
   =============================== */
-  const hasRazorpayData =
-    !!razorpayKeyId || !!razorpaySecretKey;
+  useEffect(() => {
+    if (!settings) return;
+
+    const currentData = {
+      cashInHand: Boolean(settings.cashInHand),
+      razorpayKeyId: settings.razorpayKeyId || "",
+      razorpaySecretKey: settings.razorpaySecretKey || "",
+      phonepeSaltKey: settings.phonepeSaltKey || "",
+      phonepeSaltIndex: settings.phonepeSaltIndex || "",
+      phonepeMerchantId: settings.phonepeMerchantId || "",
+      payuApiKey: settings.payuApiKey || "",
+      payuSalt: settings.payuSalt || "",
+    };
+
+    const newData = {
+      cashInHand,
+      razorpayKeyId,
+      razorpaySecretKey,
+      phonepeSaltKey,
+      phonepeSaltIndex,
+      phonepeMerchantId,
+      payuApiKey,
+      payuSalt,
+    };
+
+    const hasChangesDetected = JSON.stringify(currentData) !== JSON.stringify(newData);
+    setHasChanges(hasChangesDetected);
+  }, [
+    cashInHand,
+    razorpayKeyId,
+    razorpaySecretKey,
+    phonepeSaltKey,
+    phonepeSaltIndex,
+    phonepeMerchantId,
+    payuApiKey,
+    payuSalt,
+    settings
+  ]);
 
   /* ===============================
      INPUT FIELDS
@@ -119,19 +148,21 @@ const PaymentProviders = () => {
     razorpayKeyId: {
       type: "text",
       value: razorpayKeyId,
-      setValue: setRazorpayKeyId,
+      setValue: (val) => {
+        setRazorpayKeyId(val);
+      },
       label: "Key ID",
       placeholder: "rzp_test_...",
-      description: "Your Razorpay API Key ID",
       required: true,
     },
     razorpaySecretKey: {
       type: "password",
       value: razorpaySecretKey,
-      setValue: setRazorpaySecretKey,
+      setValue: (val) => {
+        setRazorpaySecretKey(val);
+      },
       label: "Secret Key",
       placeholder: "Enter your secret key",
-      description: "Keep this secure and never share it",
       required: true,
     },
   };
@@ -140,7 +171,9 @@ const PaymentProviders = () => {
     phonepeSaltKey: {
       type: "text",
       value: phonepeSaltKey,
-      setValue: setPhonepeSaltKey,
+      setValue: (val) => {
+        setPhonepeSaltKey(val);
+      },
       label: "Salt Key",
       placeholder: "Enter salt key",
       required: true,
@@ -148,7 +181,9 @@ const PaymentProviders = () => {
     phonepeSaltIndex: {
       type: "text",
       value: phonepeSaltIndex,
-      setValue: setPhonepeSaltIndex,
+      setValue: (val) => {
+        setPhonepeSaltIndex(val);
+      },
       label: "Salt Index",
       placeholder: "1",
       required: true,
@@ -156,7 +191,9 @@ const PaymentProviders = () => {
     phonepeMerchantId: {
       type: "text",
       value: phonepeMerchantId,
-      setValue: setPhonepeMerchantId,
+      setValue: (val) => {
+        setPhonepeMerchantId(val);
+      },
       label: "Merchant ID",
       placeholder: "MERCHANTUAT",
       required: true,
@@ -167,7 +204,9 @@ const PaymentProviders = () => {
     payuApiKey: {
       type: "text",
       value: payuApiKey,
-      setValue: setPayuApiKey,
+      setValue: (val) => {
+        setPayuApiKey(val);
+      },
       label: "API Key",
       placeholder: "gtKFFx",
       required: true,
@@ -175,7 +214,9 @@ const PaymentProviders = () => {
     payuSalt: {
       type: "text",
       value: payuSalt,
-      setValue: setPayuSalt,
+      setValue: (val) => {
+        setPayuSalt(val);
+      },
       label: "Salt",
       placeholder: "eCwWELxi",
       required: true,
@@ -183,73 +224,151 @@ const PaymentProviders = () => {
   };
 
   /* ===============================
+     SAVE ALL SETTINGS
+  =============================== */
+  const handleSaveAll = async () => {
+    if (!hasChanges) {
+      toast.info("No changes to save");
+      return;
+    }
+
+    setIsSaving(true);
+
+    const payload = {
+      cashInHand: cashInHand ? 1 : 0,
+      razorpayKeyId,
+      razorpaySecretKey,
+      phonepeSaltKey,
+      phonepeSaltIndex,
+      phonepeMerchantId,
+      payuApiKey,
+      payuSalt,
+    };
+
+    console.log("📦 SAVING ALL PAYMENT SETTINGS:", payload);
+
+    try {
+      const response = await updateSiteSettings(payload);
+
+      if (response?.success) {
+        toast.success("Payment settings saved successfully");
+
+        // Update local settings state to reflect saved changes
+        setSettings(prev => prev ? {
+          ...prev,
+          ...payload,
+          cashInHand: Boolean(payload.cashInHand)
+        } : null);
+
+        setHasChanges(false);
+      } else {
+        toast.error(response?.message || "Failed to save settings");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  /* ===============================
      RENDER
   =============================== */
   return (
     <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Payment Providers</h1>
+        <p className="text-gray-500 mt-1">
+          Configure your payment gateway settings
+        </p>
+      </div>
+
+      {/* Payment Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Razorpay */}
         <div>
-          <h3 className="flex items-center gap-2 font-semibold">
+          <h3 className="flex items-center gap-2 font-semibold mb-4">
             <CreditCard className="h-5 w-5 text-blue-600" />
             Razorpay Configuration
           </h3>
 
           <PaymentMethodCard
-            name="razorpayEnabled"
-            value={{ value: razorpayEnabled, setValue: setRazorpayEnabled }}
+            name="razorpay"
             method={{ name: "Razorpay", icon: "razorpay.png" }}
             inputFields={razorpayInputFields}
+            showEnableSwitch={false}
           />
-
         </div>
 
         {/* PayU */}
         <div>
-          <h3 className="flex items-center gap-2 font-semibold">
+          <h3 className="flex items-center gap-2 font-semibold mb-4">
             <CreditCard className="h-5 w-5 text-green-600" />
             PayU Configuration
           </h3>
 
           <PaymentMethodCard
-            name="payuEnabled"
-            value={{ value: payuEnabled, setValue: setPayuEnabled }}
+            name="payu"
             method={{ name: "PayU", icon: "payu.png" }}
             inputFields={payuInputFields}
+            showEnableSwitch={false}
           />
-
         </div>
 
         {/* PhonePe */}
         <div>
-          <h3 className="flex items-center gap-2 font-semibold">
+          <h3 className="flex items-center gap-2 font-semibold mb-4">
             <Smartphone className="h-5 w-5 text-purple-600" />
             PhonePe Configuration
           </h3>
 
           <PaymentMethodCard
-            name="phonepeEnabled"
-            value={{ value: phonepeEnabled, setValue: setPhonepeEnabled }}
+            name="phonepe"
             method={{ name: "PhonePe", icon: "phonepe.png" }}
             inputFields={phonepeInputFields}
+            showEnableSwitch={false}
           />
-
         </div>
 
         {/* Cash */}
         <div>
-          <h3 className="flex items-center gap-2 font-semibold">
+          <h3 className="flex items-center gap-2 font-semibold mb-4">
             <Wallet className="h-5 w-5 text-amber-600" />
             Cash Payment
           </h3>
 
           <PaymentMethodCard
             name="cashInHand"
-            value={{ value: cashInHand, setValue: setCashInHand }}
             method={{ name: "Cash In Hand", icon: "cash.png" }}
-            inputFields={{}}   // 🔥 REQUIRED
+            inputFields={{}}
+            showEnableSwitch={true}
+            enabled={cashInHand}
+            onToggle={(value) => setCashInHand(value)}
           />
+        </div>
+      </div>
 
+      {/* Save All Button - Responsive positioning */}
+      <div className="pt-6 border-t">
+        <div className="flex justify-center lg:justify-end">
+          <Button
+            onClick={handleSaveAll}
+            className="gap-2 w-full sm:w-auto"
+            size="lg"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                
+                Save
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </div>
