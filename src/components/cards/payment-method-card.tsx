@@ -79,8 +79,9 @@ const PaymentMethodCard = ({
     }));
 
     // IMPORTANT: Call parent's setValue function to update parent state
-    if (inputFields && inputFields[fieldName] && inputFields[fieldName].setValue) {
-      inputFields[fieldName].setValue(newValue);
+if (inputFields && inputFields[fieldName] && inputFields[fieldName].setValue) {
+      inputFields?.[fieldName]?.setValue?.(newValue);
+
     }
   };
 
@@ -185,27 +186,25 @@ const PaymentMethodCard = ({
                     </div>
 
                     <div className="relative">
-                      {isPassword ? (
-                        <>
-                          <Input
-                            id={key}
-                            type={isVisible ? "text" : "password"}
-                            value={fieldValues[key] || ""}
-                            onChange={(e) =>
-                              handleFieldChange(key, e.target.value)
-                            }
-                            placeholder={field.placeholder}
-                            className="pr-10 text-sm sm:text-base"
-                          />
-                        </>
+                  {isPassword ? (
+                        <Input
+                          id={key}
+                          name={`${key}-field`}
+                          type={isVisible ? "text" : "password"}
+                          autoComplete="new-password"
+                          value={fieldValues[key] || ""}
+                          onChange={(e) => handleFieldChange(key, e.target.value)}
+                          placeholder={field.placeholder}
+                          className="pr-10 text-sm sm:text-base"
+                        />
                       ) : (
                         <Input
                           id={key}
+                          name={`${key}-field`}
+                          autoComplete="off"
                           type={field.type}
                           value={fieldValues[key] || ""}
-                          onChange={(e) =>
-                            handleFieldChange(key, e.target.value)
-                          }
+                          onChange={(e) => handleFieldChange(key, e.target.value)}
                           placeholder={field.placeholder}
                           className="text-sm sm:text-base"
                         />

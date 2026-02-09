@@ -54,7 +54,7 @@ const EmployeeForm = ({ employeeId, employeeData, isEdit }: EmployeeFormProps) =
     try {
       const data = {
         user_id: realUserId,   // ← REQUIRED
-        employee_id: employeeId,
+        employee_id: isEdit ? employeeId : "",
         name,
         position,
         email,
