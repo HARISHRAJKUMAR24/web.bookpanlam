@@ -86,7 +86,7 @@ function Action({ id, couponId }: { id: number; couponId: string }) {
                 <AlertDialogCancel className="text-xs sm:text-sm">
                   Cancel
                 </AlertDialogCancel>
-                <AlertDialogAction 
+                <AlertDialogAction
                   onClick={handleDelete}
                   className="text-xs sm:text-sm"
                 >
@@ -144,7 +144,8 @@ export const columns: ColumnDef<Coupon>[] = [
       if (data.discountType === "percentage") {
         content = `${formatNumber(data.discount)}%`;
       } else {
-        content = `${symbol}${formatNumber(data.discount)}`;
+        // content = `${symbol}${formatNumber(data.discount)}`;
+        content = `${formatNumber(data.discount)}`;
       }
 
       return <span className="block text-xs sm:text-sm">{content}</span>;
