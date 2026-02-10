@@ -10,37 +10,34 @@ const Customers = async ({
 }: {
   searchParams: customerParams;
 }) => {
-  // Get customers data (already sorted by created_at DESC from API - newest first)
   const data = await getAllCustomers({
     limit,
     page,
     q,
   });
 
-  // Check customer limit
   const limitData = await checkCustomerLimit();
 
-  // Get limit numbers
   const currentCount = data.totalRecords || 0;
-  const limitCount = limitData.limit === 'unlimited' ? Infinity : (limitData.limit || 0);
+  const limitCount =
+    limitData.limit === "unlimited" ? Infinity : limitData.limit || 0;
 
-  // Check if limit is reached (current count > limit count)
-  const isLimitReached = currentCount > limitCount && limitCount !== Infinity;
+  const isLimitReached =
+    currentCount > limitCount && limitCount !== Infinity;
 
-  // Calculate how many newest customers are hidden
-  const excessRecords = isLimitReached && limitCount > 0 && limitCount !== Infinity
-    ? Math.max(0, currentCount - limitCount)
-    : 0;
+  const excessRecords =
+    isLimitReached && limitCount > 0 && limitCount !== Infinity
+      ? Math.max(0, currentCount - limitCount)
+      : 0;
 
-  // Determine which customers are VISIBLE (not hidden)
   let visibleCustomers = data.records;
   if (isLimitReached && limitCount > 0 && limitCount !== Infinity) {
-    // Since API returns newest first, visible customers are the OLDEST ones
-    // We need to take the last `limitCount` records
-    visibleCustomers = [...data.records].reverse().slice(0, limitCount).reverse();
+    visibleCustomers = [...data.records]
+      .reverse()
+      .slice(0, limitCount)
+      .reverse();
   }
 
-  // 🛑 HARD SAFETY GUARD (NO SILENT FAILURES)
   if (!data || !Array.isArray(data.records)) {
     return (
       <div className="p-10">
@@ -52,12 +49,28 @@ const Customers = async ({
     );
   }
 
+  const isSearching = q && q.trim().length > 0;
+
+  const searchedVisible = isSearching
+    ? visibleCustomers.filter((c) => {
+      return (
+        c.name.toLowerCase().includes(q.toLowerCase()) ||
+        c.phone.toLowerCase().includes(q.toLowerCase())
+      );
+    })
+    : visibleCustomers;
+
+
+  const tableRecords = isSearching ? searchedVisible : data.records;
+
+  const tableBlur = !isSearching && isLimitReached;
+
   return (
     <>
       <h1 className="text-2xl font-bold mb-5">Customers</h1>
 
-      {/* Show limit alert ONLY when limit is reached */}
-      {isLimitReached && (
+      {/* Show limit alert only when not searching */}
+      {isLimitReached && !isSearching && (
         <LimitAlert
           limitData={limitData}
           currentCount={currentCount}
@@ -67,22 +80,20 @@ const Customers = async ({
       )}
 
       <div className="space-y-5">
-        {/* Pass ONLY visible customers to the filter */}
         <CustomersFilter
-          data={visibleCustomers}  // ⬅️ ONLY VISIBLE CUSTOMERS
-          isLimitReached={isLimitReached}
+          data={visibleCustomers}
+          isLimitReached={tableBlur}
           excessRecords={excessRecords}
         />
 
-        {/* DataTable with all records - will apply blur effect internally */}
         <DataTable
           columns={columns}
           data={{
-            records: data.records,  // ⬅️ ALL CUSTOMERS for display with blur
+            records: tableRecords,
             totalPages: data.totalPages,
             totalRecords: data.totalRecords,
           }}
-          isLimitReached={isLimitReached}
+          isLimitReached={tableBlur}
           currentCount={currentCount}
           limitCount={limitCount}
           excessRecords={excessRecords}
