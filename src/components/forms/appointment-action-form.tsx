@@ -1,146 +1,100 @@
 "use client";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { APPOINTMENT_STATUS, PAYMENT_STATUS } from "@/constants";
-import { Label } from "../ui/label";
-import { TickCircle } from "iconsax-react";
-import { Appointment, Employee, Option } from "@/types";
-import { useEffect, useState } from "react";
-import { getAllEmployees } from "@/lib/api/employees";
-import { Input } from "../ui/input";
-import getSymbolFromCurrency from "currency-symbol-map";
-import { Button } from "../ui/button";
-import { updateAppointment } from "@/lib/api/appointments";
-import { handleToast } from "@/lib/utils";
+
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { updateAppointment } from "@/lib/api/appointments";
+import { useRouter } from "next/navigation";
 
-const AppointmentActionForm = ({
-  appointment,
-}: {
-  appointment: Appointment;
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface AppointmentActionFormProps {
+  appointment: any;
+}
 
-  const [selects, setSelects] = useState([
-    {
-      label: "Status",
-      key: "status",
-      options: APPOINTMENT_STATUS,
-    },
-    {
-      label: "Payment Status",
-      key: "paymentStatus",
-      options: PAYMENT_STATUS,
-    },
-  ]);
-const currency =
-  Array.isArray(appointment.user?.siteSettings)
-    ? appointment.user.siteSettings[0]?.currency
-    : appointment.user?.siteSettings?.currency;
-
-  const [data, setData] = useState<{ [key: string]: string | number }>({
-    status: appointment.status,
-    paymentStatus: appointment.paymentStatus,
-    employee: 0,
-    employeeCommission: 0,
+const AppointmentActionForm = ({ appointment }: AppointmentActionFormProps) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    status: appointment?.status || 'pending',
+    paymentStatus: appointment?.paymentStatus || appointment?.status || 'pending',
+    employeeId: appointment?.employeeId || appointment?.employee_id || '',
+    employeeCommission: appointment?.employeeCommission || 0,
+    charges: appointment?.charges || 0,
+    remark: appointment?.remark || ''
   });
 
-  useEffect(() => {
-    setData({
-      status: appointment.status,
-      paymentStatus: appointment.paymentStatus,
-      employee: appointment.employeeId?.toString(),
-      employeeCommission: appointment.employeeCommission,
-    });
-  }, [appointment]);
+  console.log("Form data from appointment:", appointment);
 
-  useEffect(() => {
-    async function fetchEmployees() {
-      const employees = await getAllEmployees({ limit: 999 });
-      let options: Option[] = [];
+  const handleChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-      employees.records.map((employee: Employee) => {
-        options.push({
-          label: employee.name + " - " + employee.position,
-          value: employee.id.toString(),
-        });
-      });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-      setSelects((prev) =>
-        !prev.find((item) => item.key === "employee")
-          ? [...prev, { label: "Employee", key: "employee", options }]
-          : prev
-      );
-    }
-    fetchEmployees();
-  }, []);
-
-  const handleSave = async () => {
     try {
-      const result = await updateAppointment(appointment.appointmentId, {
-        status: data.status as string,
-        paymentStatus: data.paymentStatus as string,
-        employeeId: parseInt(data.employee as string),
-        employeeCommission: data.employeeCommission as string,
-      });
+      const result = await updateAppointment(
+        appointment.appointmentId || appointment.appointment_id, 
+        {
+          status: formData.status,
+          paymentStatus: formData.paymentStatus,
+          employeeId: formData.employeeId,
+          employeeCommission: formData.employeeCommission,
+          charges: formData.charges,
+          remark: formData.remark
+        }
+      );
 
-      handleToast(result);
-    } catch (error) {
-      console.log(error);
+      if (result.success) {
+        toast.success("Appointment updated successfully");
+        router.refresh();
+      } else {
+        toast.error(result.message || "Failed to update appointment");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const statusOptions = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'confirmed', label: 'Confirmed' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'cancelled', label: 'Cancelled' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'refunded', label: 'Refunded' }
+  ];
+
+  const paymentStatusOptions = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'failed', label: 'Failed' },
+    { value: 'refunded', label: 'Refunded' }
+  ];
+
   return (
-    <>
-      <div className="bg-white rounded-xl p-5 flex items-center flex-wrap justify-between gap-x-6 gap-y-3">
-        <div className="flex items-center flex-wrap gap-x-6 gap-y-3">
-          {selects.map((item, index: number) => (
-            <div className="space-y-2" key={index}>
-              <Label>{item.label}</Label>
-
-              <Select
-                value={data[item.key] as string}
-                onValueChange={(value) => {
-                  if (
-                    item.key === "status" &&
-                    value === "Completed" &&
-                    !data.employee
-                  ) {
-                    return toast.error("Please select a employee to continue");
-                  }
-
-                  setData((prev) => ({ ...prev, [item.key]: value }));
-                }}
-                onOpenChange={(status) =>
-                  status == true &&
-                  item.key === "employee" &&
-                  setIsModalOpen(true)
-                }
-                disabled={
-                  (item.key === "paymentStatus" &&
-                    appointment.paymentStatus === "Paid") ||
-                  appointment.status === "Completed" ||
-                  appointment.status === "Cancelled"
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select" />
+    <Card>
+      <CardHeader>
+        <CardTitle>Update Appointment Status</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {item.options.map((option) => (
+                  {statusOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -148,82 +102,86 @@ const currency =
                 </SelectContent>
               </Select>
             </div>
-          ))}
-        </div>
 
-        <div>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="bg-primary text-white rounded-full h-12 px-5 flex items-center justify-center gap-2 w-full sm:w-auto transition hover:bg-primary/90"
-          >
-            <TickCircle />
-            Save
-          </button>
-        </div>
-      </div>
-
-      {/* Employee Modal */}
-      <Dialog
-        open={isModalOpen}
-        onOpenChange={() => setIsModalOpen((prev) => !prev)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Choose Employee</DialogTitle>
-          </DialogHeader>
-
-          <div className="grid gap-5">
             <div className="space-y-2">
-              <Label>Employee</Label>
-
-              <Select
-                value={data["employee"] as string}
-                onValueChange={(value) => {
-                  setData((prev) => ({ ...prev, ["employee"]: value }));
-                }}
-              >
+              <Label htmlFor="paymentStatus">Payment Status</Label>
+              <Select value={formData.paymentStatus} onValueChange={(value) => handleChange('paymentStatus', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select" />
+                  <SelectValue placeholder="Select payment status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {selects
-                    .find((item) => item.key === "employee")
-                    ?.options.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
+                  {paymentStatusOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Commission</Label>
-
+              <Label htmlFor="employeeId">Employee ID</Label>
               <Input
-                type="number"
-           placeholder={getSymbolFromCurrency(currency || "INR")}
+                id="employeeId"
+                value={formData.employeeId}
+                onChange={(e) => handleChange('employeeId', e.target.value)}
+                placeholder="Enter employee ID"
+              />
+            </div>
 
-                value={data.employeeCommission}
-                onChange={(e) =>
-                  setData((prev) => ({
-                    ...prev,
-                    employeeCommission: e.target.value,
-                  }))
-                }
+            <div className="space-y-2">
+              <Label htmlFor="employeeCommission">Employee Commission (%)</Label>
+              <Input
+                id="employeeCommission"
+                type="number"
+                value={formData.employeeCommission}
+                onChange={(e) => handleChange('employeeCommission', parseFloat(e.target.value) || 0)}
+                placeholder="0"
+                min="0"
+                max="100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="charges">Additional Charges</Label>
+              <Input
+                id="charges"
+                type="number"
+                value={formData.charges}
+                onChange={(e) => handleChange('charges', parseFloat(e.target.value) || 0)}
+                placeholder="0"
+                min="0"
               />
             </div>
           </div>
 
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button">Done</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          <div className="space-y-2">
+            <Label htmlFor="remark">Remark</Label>
+            <Textarea
+              id="remark"
+              value={formData.remark}
+              onChange={(e) => handleChange('remark', e.target.value)}
+              placeholder="Add any remarks or notes"
+              rows={3}
+            />
+          </div>
+
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Updating..." : "Update Appointment"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

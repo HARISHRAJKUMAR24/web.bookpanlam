@@ -24,8 +24,6 @@ export const getAllAppointments = async (params: appointmentsParams) => {
         paymentMethod: params.paymentMethod || "",
         fromDate: params.fromDate || "",
         toDate: params.toDate || "",
-
-        // THE FIX ⬇⬇⬇⬇⬇⬇⬇⬇
         customer_id: params.customerId ?? "",
       },
       withCredentials: true,
@@ -41,13 +39,9 @@ export const getAllAppointments = async (params: appointmentsParams) => {
   }
 };
 
-
-
 // Get calendar
 export const getCalendar = async () => {
   const token = cookies().get("token")?.value;
-
-  // MATCHING YOUR APPOINTMENT PATH STYLE
   const url = `${apiUrl}/seller/appointments/calendar.php`;
 
   try {
@@ -60,29 +54,22 @@ export const getCalendar = async () => {
 
     const raw = response.data?.records || [];
 
-    // MAP INTO FULLCALENDAR FORMAT
-const events = raw.map((item: any) => ({
-  id: item.appointment_id,
-
-  // This will not be shown because we overwrite with eventContent
-  title: item.doctor_name || item.service_name,
-
-  start: `${item.appointment_date}T${item.slot_from}`,
-  end: `${item.appointment_date}T${item.slot_to}`,
-
-  extendedProps: {
-    doctor_name: item.doctor_name,
-    doctor_image: item.doctor_image,
-    specialization: item.specialization,
-    qualification: item.qualification,
-
-    customer_id: item.customer_id,
-    status: item.status,
-    amount: item.total_amount,
-    service: item.service_name,
-  },
-}));
-
+    const events = raw.map((item: any) => ({
+      id: item.appointment_id,
+      title: item.doctor_name || item.service_name,
+      start: `${item.appointment_date}T${item.slot_from}`,
+      end: `${item.appointment_date}T${item.slot_to}`,
+      extendedProps: {
+        doctor_name: item.doctor_name,
+        doctor_image: item.doctor_image,
+        specialization: item.specialization,
+        qualification: item.qualification,
+        customer_id: item.customer_id,
+        status: item.status,
+        amount: item.total_amount,
+        service: item.service_name,
+      },
+    }));
 
     return events;
   } catch (error) {
@@ -91,44 +78,82 @@ const events = raw.map((item: any) => ({
   }
 };
 
-// Get single appointment
+
+// In your appointments.ts file
+// Get single appointment - UPDATED VERSION
 export const getAppointment = async (appointmentId: string) => {
   const token = cookies().get("token")?.value;
-  const url = `${apiUrl + route}/${appointmentId}`;
 
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const url = `${apiUrl}/seller/appointments/get-appointment.php`;
 
   try {
-    const response = await axios.get(url, options);
+    const response = await axios.get(url, {
+      params: {
+        id: appointmentId
+      },
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Cookie': `token=${token}`
+      },
+      withCredentials: true,
+    });
+
+    console.log("📌 Appointment Details API Response:", response.data);
+
+    if (!response.data || response.data.success === false) {
+      console.log("❌ Appointment not found or API error");
+      return false;
+    }
+
+    // Return the entire response.data (which contains all appointment fields at root)
     return response.data;
   } catch (error: any) {
+    console.log("❌ Get appointment error:", error.response?.data || error.message);
     return false;
   }
 };
 
-// Update a appointment
+// Update a appointment - UPDATED for your PHP endpoint
 export const updateAppointment = async (
   appointmentId: string,
   data: updateAppointmentData
 ) => {
   const token = cookies().get("token")?.value;
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
 
-  const url = `${apiUrl + route}/${appointmentId}`;
+  // Use the update-status.php endpoint
+  const url = `${apiUrl}/seller/appointments/update-status.php`;
 
   try {
-    const response = await axios.put(url, data, options);
-    return { success: true, ...response.data };
+    const requestData: any = {
+      appointment_id: appointmentId,
+      status: data.status
+    };
+
+    // Add additional fields if needed
+    if (data.paymentStatus) {
+      requestData.payment_status = data.paymentStatus;
+    }
+
+    if (data.employeeId) {
+      requestData.employee_id = data.employeeId;
+    }
+
+    if (data.employeeCommission) {
+      requestData.employee_commission = data.employeeCommission;
+    }
+
+    const response = await axios.post(url, requestData, {
+      withCredentials: true,
+      headers: {
+        Cookie: `token=${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    return response.data;
   } catch (error: any) {
-    return false;
+    console.log("Update appointment error:", error);
+    return { success: false, message: "Failed to update appointment" };
   }
 };
 
@@ -154,30 +179,24 @@ export const getReports = async (timeFrame: string) => {
   }
 };
 
-
 // Update appointment status
-
 export const updateAppointmentStatus = async (
-  appointmentId: string, 
+  appointmentId: string,
   status: string,
-  paymentMethod?: string  // Add this parameter
+  paymentMethod?: string
 ) => {
   const token = cookies().get("token")?.value;
   const url = `${apiUrl}/seller/appointments/update-status.php`;
 
   try {
-    // Prepare request data
     const requestData: any = {
       appointment_id: appointmentId,
       status: status
     };
-    
-    // Add payment_method if provided
+
     if (paymentMethod) {
       requestData.payment_method = paymentMethod;
     }
-
-    console.log("Sending update request:", requestData); // Debug log
 
     const response = await axios.post(url, requestData, {
       withCredentials: true,
