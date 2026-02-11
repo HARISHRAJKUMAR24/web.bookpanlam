@@ -84,7 +84,7 @@ export const getCalendar = async () => {
 export const getAppointment = async (appointmentId: string) => {
   const token = cookies().get("token")?.value;
 
-  const url = `${apiUrl}/seller/appointments/get-appointment.php`;
+  const url = `${apiUrl}/seller/appointments/get-single-appointment.php`;
 
   try {
     const response = await axios.get(url, {
