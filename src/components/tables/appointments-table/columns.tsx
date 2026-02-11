@@ -40,69 +40,132 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
 
-  {
-    header: "Doctor / Dept",
-    cell: ({ row }) => {
-      const d = row.original;
-      const isDepartment = d.service_reference_type === 'department';
+  // {
+  //   header: "Doctor / Dept",
+  //   cell: ({ row }) => {
+  //     const d = row.original;
+  //     const serviceName = d.service_name;
 
-      if (isDepartment) {
-        return (
-          <div className="space-y-0.5 sm:space-y-1">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Badge
-                variant="outline"
-                className="bg-blue-50 border-blue-200 text-blue-700 text-xs px-1.5 sm:px-2 py-0.5"
-              >
-                Dept
-              </Badge>
-            </div>
-            <div className="font-medium text-xs sm:text-sm truncate">
-              {d.service_name || d.service_reference_id || "Department"}
-            </div>
-            {d.service_reference_id && (
-              <div className="text-xs text-gray-500 truncate">ID: {d.service_reference_id}</div>
-            )}
-          </div>
-        );
-      } else {
-        if (!d.doctor_name) return <span className="text-gray-500 text-sm">No Doctor</span>;
+  //     let isDepartment = false;
+  //     let displayContent = null;
 
-        return (
-          <div className="space-y-0.5 sm:space-y-1">
-            <div className="font-medium text-xs sm:text-sm truncate">{d.doctor_name}</div>
-            {d.specialization && (
-              <div className="text-xs text-gray-500 truncate">{d.specialization}</div>
-            )}
-          </div>
-        );
-      }
-    },
-  },
+  //     try {
+  //       if (serviceName && serviceName.startsWith('{')) {
+  //         const serviceData = JSON.parse(serviceName);
+  //         isDepartment = serviceData.type === 'department';
+
+  //         if (isDepartment) {
+  //           // For department: Show department_name with Dept badge
+  //           const deptName = serviceData.department_name || "Department";
+  //           displayContent = (
+  //             <div className="space-y-0.5 sm:space-y-1">
+  //               <div className="flex items-center gap-1 sm:gap-2">
+  //                 <Badge
+  //                   variant="outline"
+  //                   className="bg-blue-50 border-blue-200 text-blue-700 text-xs px-1.5 sm:px-2 py-0.5"
+  //                 >
+  //                   Dept
+  //                 </Badge>
+  //                 <span className="text-xs sm:text-sm">{serviceData.department_id}</span>
+  //               </div>
+  //               <div className="font-medium text-xs sm:text-sm truncate">
+  //                 {deptName}
+  //               </div>
+  //             </div>
+  //           );
+  //         } else if (serviceData.type === 'category') {
+  //           // For category: Show doctor_name and specialization
+  //           const doctorName = serviceData.doctor_name || "No Doctor";
+  //           const specialization = serviceData.specialization;
+
+  //           displayContent = (
+  //             <div className="space-y-0.5 sm:space-y-1">
+  //               <div className="font-medium text-xs sm:text-sm truncate">{doctorName}</div>
+  //               {specialization && (
+  //                 <div className="text-xs text-gray-500 truncate">{specialization}</div>
+  //               )}
+  //             </div>
+  //           );
+  //         } else {
+  //           // Fallback for other types
+  //           displayContent = (
+  //             <span className="text-gray-500 text-sm">
+  //               {serviceData.doctor_name || serviceData.department_name || "Unknown"}
+  //             </span>
+  //           );
+  //         }
+  //       } else {
+  //         // If not JSON, try to use service_reference_type
+  //         isDepartment = d.service_reference_type === 'department';
+
+  //         if (isDepartment) {
+  //           displayContent = (
+  //             <div className="space-y-0.5 sm:space-y-1">
+  //               <div className="flex items-center gap-1 sm:gap-2">
+  //               </div>
+  //               <div className="font-medium text-xs sm:text-sm truncate">
+  //                 {serviceName || d.service_reference_id || "Department"}
+  //               </div>
+  //             </div>
+  //           );
+  //         } else {
+  //           displayContent = (
+  //             <div className="space-y-0.5 sm:space-y-1">
+  //               <div className="font-medium text-xs sm:text-sm truncate">
+  //                 {serviceName || "No Info"}
+  //               </div>
+  //             </div>
+  //           );
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error parsing service data:", error);
+  //       displayContent = (
+  //         <span className="text-gray-500 text-sm">Error loading data</span>
+  //       );
+  //     }
+
+  //     return displayContent;
+  //   },
+  // },
 
   {
     header: "Service",
-    accessorKey: "service_name",
     cell: ({ row }) => {
       const d = row.original;
-      const isDepartment = d.service_reference_type === 'department';
+      const serviceName = d.service_name;
+      let displayText = "N/A";
 
-      if (isDepartment) {
-        return (
-          <div className="space-y-0.5 sm:space-y-1">
-            <div className="font-medium text-xs sm:text-sm truncate">
-              {d.service_name || "Department Consultation"}
-            </div>
-            {d.service_reference_type && (
-              <div className="text-xs text-gray-500 truncate">
-                <span className="capitalize">{d.service_reference_type}</span>
-              </div>
-            )}
-          </div>
-        );
+      try {
+        // Check if service_name is a JSON string
+        if (serviceName && serviceName.startsWith('{')) {
+          const serviceData = JSON.parse(serviceName);
+
+          if (serviceData.type === 'department') {
+            // For department: Show department_name only
+            displayText = serviceData.department_name || "Department";
+          } else if (serviceData.type === 'category') {
+            // For category: Show doctor_name and specialization
+            const doctorName = serviceData.doctor_name || "";
+            const specialization = serviceData.specialization || "";
+            displayText = `${doctorName}${specialization ? ` - ${specialization}` : ''}`;
+          } else {
+            // Fallback for other types
+            displayText = serviceData.doctor_name || serviceData.department_name || JSON.stringify(serviceData);
+          }
+        } else {
+          // If it's not JSON, use as is
+          displayText = serviceName || "N/A";
+        }
+      } catch (error) {
+        console.error("Error parsing service_name:", error);
+        displayText = serviceName || "N/A";
       }
+
       return (
-        <span className="text-sm sm:text-base truncate">{d.service_name || "N/A"}</span>
+        <span className="text-sm sm:text-base truncate" title={displayText}>
+          {displayText}
+        </span>
       );
     },
   },
@@ -119,6 +182,34 @@ export const columns: ColumnDef<any>[] = [
             {d.slot_from?.substring(0, 5)} - {d.slot_to?.substring(0, 5)}
           </span>
         </div>
+      );
+    },
+  },
+
+  {
+    header: "Amount",
+    accessorKey: "total_amount",
+    cell: ({ row }) => {
+      const d = row.original;
+      const isDepartment = d.service_reference_type === 'department';
+      // const displayAmount = `${d.currency || "INR"} ${d.total_amount || "0"}`;
+     const displayAmount = parseFloat(d.total_amount || "0").toString();
+
+      if (isDepartment) {
+        return (
+          <div className="space-y-0.5 sm:space-y-1">
+            <div className="font-medium text-xs sm:text-sm">{displayAmount}</div>
+            {d.token_count > 1 && (
+              <div className="text-xs text-gray-500">
+                {d.token_count} × {(parseFloat(d.total_amount) / d.token_count).toFixed(2)}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      return (
+        <span className="text-xs sm:text-sm">{displayAmount}</span>
       );
     },
   },
@@ -197,32 +288,7 @@ export const columns: ColumnDef<any>[] = [
     },
   },
 
-  {
-    header: "Amount",
-    accessorKey: "total_amount",
-    cell: ({ row }) => {
-      const d = row.original;
-      const isDepartment = d.service_reference_type === 'department';
-      const displayAmount = `${d.currency || "INR"} ${d.total_amount || "0"}`;
 
-      if (isDepartment) {
-        return (
-          <div className="space-y-0.5 sm:space-y-1">
-            <div className="font-medium text-xs sm:text-sm">{displayAmount}</div>
-            {d.token_count > 1 && (
-              <div className="text-xs text-gray-500">
-                {d.token_count} × {(parseFloat(d.total_amount) / d.token_count).toFixed(2)}
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      return (
-        <span className="text-xs sm:text-sm">{displayAmount}</span>
-      );
-    },
-  },
 
   {
     header: "Actions",
@@ -369,8 +435,8 @@ export const columns: ColumnDef<any>[] = [
             <DropdownMenuTrigger asChild>
               <button
                 className={`p-1.5 sm:p-2 rounded-md border transition-colors ${isDropdownDisabled
-                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 border-gray-200'
+                  ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 border-gray-200'
                   }`}
                 disabled={isDropdownDisabled || isLoading}
                 title={isDropdownDisabled ? "No actions available" : "Change Status"}
