@@ -1016,6 +1016,7 @@ export type appointmentsParams = {
   customerId?: number;
   fromDate?: string;
   toDate?: string;
+  doctor?: string;
 };
 
 export type updateAppointmentData = {

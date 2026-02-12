@@ -25,6 +25,8 @@ export const getAllAppointments = async (params: appointmentsParams) => {
         fromDate: params.fromDate || "",
         toDate: params.toDate || "",
         customer_id: params.customerId ?? "",
+doctor: params.doctor || "",
+
       },
       withCredentials: true,
       headers: {
@@ -120,27 +122,40 @@ export const updateAppointment = async (
   }
 };
 
-// Get Reports
-export const getReports = async (timeFrame: string) => {
+export const getReports = async (params: any) => {
   const token = cookies().get("token")?.value;
-  const url = `${apiUrl + route}/reports`;
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    params: {
-      timeFrame: timeFrame,
-    },
-  };
+  const url = `${apiUrl}/seller/appointments/reports.php`;
 
   try {
-    const response = await axios.get(url, options);
+    const response = await axios.get(url, {
+      params: {
+        doctor: params.doctor || "",
+        q: params.q || "",
+        status: params.status || "",
+        paymentMethod: params.paymentMethod || "",
+        fromDate: params.fromDate || "",
+        toDate: params.toDate || "",
+        date: params.date || "",
+      },
+      headers: {
+        Cookie: `token=${token}`,
+      },
+      withCredentials: true,
+    });
+
     return response.data;
-  } catch (error: any) {
-    return false;
+  } catch (error) {
+    return {
+      totalAppointments: 0,
+      totalAmount: 0,
+      paidAmount: 0,
+      pendingAmount: 0,
+      gstAmount: 0,
+    };
   }
 };
+
+
 
 // Update appointment status
 export const updateAppointmentStatus = async (

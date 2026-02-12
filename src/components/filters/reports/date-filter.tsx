@@ -16,16 +16,15 @@ export const DateFilter = () => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
 
-  let limit = searchParams.get("limit");
-  !limit && (limit = "10");
 
-  let page = searchParams.get("page");
-  !page || (parseInt(page.toString()) <= 1 && (page = "1"));
+const handleDateChange = (value: string) => {
+  const newParams = new URLSearchParams(searchParams.toString());
 
-  const handleDateChange = (value: string) => {
-    params.set("date", value);
-    replace(`${pathname}?${params.toString()}`);
-  };
+  newParams.set("date", value);
+  newParams.set("page", "1"); // reset pagination
+
+  replace(`${pathname}?${newParams.toString()}`);
+};
 
   return (
     <Select
