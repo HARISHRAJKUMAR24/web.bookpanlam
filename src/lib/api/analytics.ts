@@ -4,7 +4,11 @@ import { apiUrl } from "@/config";
 import { currentUser } from "./users";
 
 // ⭐ GET REVENUE GRAPH DATA WITH VIEW TOGGLE
-export const getRevenue = async (view: "year" | "month" | "day" = "month", limit: string = "12") => {
+export const getRevenue = async (
+  view: "year" | "month" | "day" = "month",
+  limit: number = 12
+) => {
+
   const user = await currentUser();
   if (!user?.user_id) return [];
 

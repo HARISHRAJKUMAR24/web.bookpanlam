@@ -61,7 +61,7 @@ const DashboardHome = async () => {
     : [];
 
   // MAIN API CALLS
-  const revenueData = await getRevenue("7");
+  const revenueData = await getRevenue("day");
   const overviewData = await getOverview();
   const todayAppointments = await getTodayAppointments();
   const todayData = await getTodayAppointments();
