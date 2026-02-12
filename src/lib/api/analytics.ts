@@ -3,13 +3,13 @@
 import { apiUrl } from "@/config";
 import { currentUser } from "./users";
 
-// ⭐ GET REVENUE GRAPH DATA
-export const getRevenue = async (days: string = "7") => {
+// ⭐ GET REVENUE GRAPH DATA WITH VIEW TOGGLE
+export const getRevenue = async (view: "year" | "month" | "day" = "month", limit: string = "12") => {
   const user = await currentUser();
   if (!user?.user_id) return [];
 
   const res = await fetch(
-    `${apiUrl}/seller/analytics/get-revenue-graph.php?user_id=${user.user_id}&days=${days}`,
+    `${apiUrl}/seller/analytics/get-revenue-graph.php?user_id=${user.user_id}&view=${view}&limit=${limit}`,
     {
       cache: "no-store",
       credentials: "include",
@@ -20,21 +20,16 @@ export const getRevenue = async (days: string = "7") => {
   console.log("🔥 RAW REVENUE RESPONSE:", raw);
 
   try {
-  const parsed = JSON.parse(raw);
-
-// Backend returns plain array — so return parsed directly
-if (Array.isArray(parsed)) return parsed;
-
-return [];
-
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
   } catch {
     console.log("Invalid Revenue JSON => ", raw);
     return [];
   }
 };
 
-
-// ⭐ GET OVERVIEW DATA
+// ⭐ GET OVERVIEW DATA (keep as is)
 export const getOverview = async () => {
   const user = await currentUser();
   if (!user?.user_id) {
@@ -71,8 +66,7 @@ export const getOverview = async () => {
   }
 };
 
-
-// ⭐ GET TODAY'S APPOINTMENTS
+// ⭐ GET TODAY'S APPOINTMENTS (keep as is)
 export const getTodayAppointments = async () => {
   const user = await currentUser();
   if (!user?.user_id) return { paid: 0, pending: 0 };
@@ -96,4 +90,3 @@ export const getTodayAppointments = async () => {
     return { paid: 0, pending: 0 };
   }
 };
-

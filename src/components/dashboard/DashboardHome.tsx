@@ -6,6 +6,7 @@ import {
   Calendar,
   Chart,
 } from "iconsax-react";
+import RevenueChartToggle from "@/components/charts/revenue-chart-toggle";
 
 import { abbreviateNumber } from "@/lib/utils";
 import Stats from "@/components/cards/stats";
@@ -60,10 +61,10 @@ const DashboardHome = async () => {
     : [];
 
   // MAIN API CALLS
-  const revenueData = await getRevenue("7");
   const overviewData = await getOverview();
   const todayAppointments = await getTodayAppointments();
   const todayData = await getTodayAppointments();
+const revenueData = await getRevenue("month", "30"); // Default to monthly view
 
   // OVERVIEW STATS
   const overviewStats = [
@@ -184,8 +185,8 @@ const DashboardHome = async () => {
               Revenue Overview
             </h2>
             <div className="h-[280px] md:h-[320px]">
-              <RevenueGraph chartData={revenueData} />
-            </div>
+  <RevenueChartToggle chartData={revenueData} />
+</div>
           </div>
         </div>
 
