@@ -69,6 +69,7 @@ const SIDEBAR_LINKS = [
 
   { label: "Coupons", href: "/coupons", icon: <DiscountShape /> },
   { label: "Upgrade Plan", href: "/all-plans", icon: <Moneys /> },
+  { label: "Purchase History", href: "/purchase-history", icon: <Document /> },
   // Futeye Update Plugins
   // { label: "Plugins", href: "/plugins", icon: <Flash /> },
   { label: "Settings", href: "/settings", icon: <Setting2 /> },

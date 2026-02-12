@@ -244,6 +244,35 @@ export type Department = {
 };
 
 
+// types/index.ts
+export interface PurchaseHistory {
+  id: number;
+  invoice_number: number;
+  plan_id: number;
+  plan_name?: string;
+  user_id: number;
+  payment_method: string;
+  payment_id: string;
+  currency: string;
+  currency_symbol: string;
+  amount: number;
+  gst_amount: number | null;
+  gst_type: string | null;
+  gst_number: string | null;
+  gst_percentage: number | null;
+  discount: number | null;
+  name: string;
+  email: string;
+  phone: string;
+  address_1: string;
+  address_2: string | null;
+  state: string;
+  city: string;
+  pin_code: string;
+  country: string;
+  created_at: string;
+}
+
 
 export interface DepartmentFormProps {
   departmentId: string;
@@ -1016,6 +1045,7 @@ export type appointmentsParams = {
   customerId?: number;
   fromDate?: string;
   toDate?: string;
+  doctor?: string;   // ✅ ADD THIS
 };
 
 export type updateAppointmentData = {
