@@ -98,7 +98,7 @@ export default function InvoiceDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading invoice details...</p>
@@ -109,9 +109,9 @@ export default function InvoiceDetailsPage() {
 
   if (!paymentDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Invoice Not Found</h2>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="text-center max-w-md mx-auto">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Invoice Not Found</h2>
           <p className="text-gray-600 mb-6">Unable to retrieve invoice #{invoiceNumber}</p>
           <Link
             href="/purchase-history"
@@ -126,42 +126,42 @@ export default function InvoiceDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 px-4 print:bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-6 sm:py-8 px-3 sm:px-4 print:bg-white">
       <div className="max-w-4xl mx-auto">
-        {/* Success Header - Like PaymentSuccessPage */}
-        <div className="text-center mb-12 print:hidden">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-            <CheckCircle size={48} className="text-green-600" />
+        {/* Success Header - Responsive */}
+        <div className="text-center mb-8 sm:mb-12 print:hidden">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4 sm:mb-6">
+            <CheckCircle size={36} className="sm:w-12 sm:h-12 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             Invoice Details
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-sm sm:text-lg text-gray-600 px-2">
             Invoice #{paymentDetails.invoice.invoice_number} for {paymentDetails.plan.name}
           </p>
         </div>
 
-        {/* Invoice Card - EXACTLY like PaymentSuccessPage */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8 print:shadow-none print:border-none print:p-0">
-          {/* Section 1: Company Name Centered */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        {/* Invoice Card - Responsive */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 md:p-8 mb-8 print:shadow-none print:border-none print:p-0">
+          {/* Section 1: Company Name Centered - Responsive */}
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
               {paymentDetails.company.name}
             </h1>
-            <div className="w-48 h-[1px] bg-gray-300 mx-auto"></div>
-            <div className="text-gray-600 text-sm mt-2">
+            <div className="w-32 sm:w-48 h-[1px] bg-gray-300 mx-auto"></div>
+            <div className="text-xs sm:text-sm text-gray-600 mt-2 px-2">
               {paymentDetails.company.address}
             </div>
           </div>
 
-          {/* Section 2: Payment Status and Invoice Details */}
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
+          {/* Section 2: Payment Status and Invoice Details - Responsive Grid */}
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
             {/* Left side - Payment Status */}
             <div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-700 font-medium">Payment Status:</span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Payment Status:</span>
+                  <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
                     paymentDetails.invoice.status.toLowerCase() === 'paid'
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
@@ -169,169 +169,171 @@ export default function InvoiceDetailsPage() {
                     {paymentDetails.invoice.status.toUpperCase()}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-700 font-medium">Place of Supply:</span>
-                  <span className="text-gray-900">{paymentDetails.payment.place_of_supply}</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Place of Supply:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.payment.place_of_supply}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-700 font-medium">Country of Supply:</span>
-                  <span className="text-gray-900">{paymentDetails.payment.country_of_supply}</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Country of Supply:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.payment.country_of_supply}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-700 font-medium">Payment Method:</span>
-                  <span className="text-gray-900 uppercase">{paymentDetails.payment.method}</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Payment Method:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 uppercase">{paymentDetails.payment.method}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-700 font-medium">Payment ID:</span>
-                  <span className="text-gray-900 text-sm font-mono">{paymentDetails.payment.payment_id}</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Payment ID:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 font-mono break-all">{paymentDetails.payment.payment_id}</span>
                 </div>
               </div>
             </div>
 
             {/* Right side - Invoice Details */}
-            <div className="text-right">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <div className="md:text-right">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                 INVOICE #{paymentDetails.invoice.invoice_number}
               </h2>
-              <div className="space-y-2">
-                <div className="flex justify-end items-center gap-4">
-                  <span className="text-gray-700 font-medium">Date:</span>
-                  <span className="text-gray-900">{formatDate(paymentDetails.invoice.date)}</span>
+              <div className="space-y-1 sm:space-y-2">
+                <div className="flex justify-between md:justify-end items-center gap-4">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Date:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{formatDate(paymentDetails.invoice.date)}</span>
                 </div>
-                <div className="flex justify-end items-center gap-4">
-                  <span className="text-gray-700 font-medium">Due Date:</span>
-                  <span className="text-gray-900">{formatDate(paymentDetails.invoice.due_date)}</span>
+                <div className="flex justify-between md:justify-end items-center gap-4">
+                  <span className="text-xs sm:text-sm text-gray-700 font-medium">Due Date:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{formatDate(paymentDetails.invoice.due_date)}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Section 3: Company and Customer Information */}
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
+          {/* Section 3: Company and Customer Information - Responsive */}
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
             {/* Company Information */}
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 text-lg mb-4 border-b pb-2">Company Information</h3>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-gray-600 text-sm block">Name:</span>
-                  <span className="text-gray-900 font-medium">{paymentDetails.company.name}</span>
+            <div className="border border-gray-200 rounded-lg p-4 sm:p-6">
+              <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-3 sm:mb-4 border-b pb-2">Company Information</h3>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Name:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 font-medium break-words">{paymentDetails.company.name}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Address:</span>
-                  <span className="text-gray-900">{paymentDetails.company.address}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Address:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 break-words">{paymentDetails.company.address}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Email Address:</span>
-                  <span className="text-gray-900">{paymentDetails.company.email}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Email:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 break-words">{paymentDetails.company.email}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Phone Number:</span>
-                  <span className="text-gray-900">{paymentDetails.company.phone}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Phone:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.company.phone}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">GST Number:</span>
-                  <span className="text-gray-900">{paymentDetails.company.gst_number}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">GST:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.company.gst_number}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">HSN:</span>
-                  <span className="text-gray-900">{paymentDetails.company.hsn}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">HSN:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.company.hsn}</span>
                 </div>
               </div>
             </div>
 
             {/* Customer Information */}
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 text-lg mb-4 border-b pb-2">Customer Information</h3>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-gray-600 text-sm block">Name:</span>
-                  <span className="text-gray-900 font-medium">{paymentDetails.customer.name}</span>
+            <div className="border border-gray-200 rounded-lg p-4 sm:p-6">
+              <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-3 sm:mb-4 border-b pb-2">Customer Information</h3>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Name:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 font-medium">{paymentDetails.customer.name}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Address:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.address_1}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Address:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 break-words">{paymentDetails.customer.address_1}</span>
                 </div>
                 {paymentDetails.customer.address_2 && (
-                  <div>
-                    <span className="text-gray-600 text-sm block">Address Line 2:</span>
-                    <span className="text-gray-900">{paymentDetails.customer.address_2}</span>
+                  <div className="flex flex-col xs:flex-row">
+                    <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Address 2:</span>
+                    <span className="text-xs sm:text-sm text-gray-900 break-words">{paymentDetails.customer.address_2}</span>
                   </div>
                 )}
-                <div>
-                  <span className="text-gray-600 text-sm block">City:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.city}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">City:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.city}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">State:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.state}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">State:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.state}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Postal Code:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.pin_code}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Postal:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.pin_code}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Country:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.country}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Country:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.country}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Email Address:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.email}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Email:</span>
+                  <span className="text-xs sm:text-sm text-gray-900 break-words">{paymentDetails.customer.email}</span>
                 </div>
-                <div>
-                  <span className="text-gray-600 text-sm block">Phone Number:</span>
-                  <span className="text-gray-900">{paymentDetails.customer.phone}</span>
+                <div className="flex flex-col xs:flex-row">
+                  <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">Phone:</span>
+                  <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.phone}</span>
                 </div>
                 {paymentDetails.customer.gst_number && (
-                  <div>
-                    <span className="text-gray-600 text-sm block">GST Number:</span>
-                    <span className="text-gray-900">{paymentDetails.customer.gst_number}</span>
+                  <div className="flex flex-col xs:flex-row">
+                    <span className="text-xs sm:text-sm text-gray-600 block xs:w-24">GST:</span>
+                    <span className="text-xs sm:text-sm text-gray-900">{paymentDetails.customer.gst_number}</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Section 4: Invoice Items Table - EXACTLY like PaymentSuccessPage */}
-          <div className="mb-8 overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 px-6 py-3 text-left font-bold text-gray-700">Plan Name</th>
-                  <th className="border border-gray-300 px-6 py-3 text-left font-bold text-gray-700">Expiry Date</th>
-                  <th className="border border-gray-300 px-6 py-3 text-right font-bold text-gray-700">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paymentDetails.items.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 px-6 py-4">{item.description}</td>
-                    <td className="border border-gray-300 px-6 py-4">
-                      {(() => {
-                        const startDate = new Date(paymentDetails.invoice.date);
-                        const expiryDate = new Date(startDate);
-                        expiryDate.setDate(startDate.getDate() + paymentDetails.plan.duration);
-                        return formatDate(expiryDate.toISOString());
-                      })()}
-                    </td>
-                    <td className="border border-gray-300 px-6 py-4 text-right">{formatCurrency(item.total)}</td>
+          {/* Section 4: Invoice Items Table - Responsive */}
+          <div className="mb-6 sm:mb-8 overflow-x-auto">
+            <div className="min-w-[300px] sm:min-w-full">
+              <table className="w-full border-collapse border border-gray-300 text-xs sm:text-sm">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-3 text-left font-bold text-gray-700">Plan Name</th>
+                    <th className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-3 text-left font-bold text-gray-700">Expiry Date</th>
+                    <th className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-3 text-right font-bold text-gray-700">Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paymentDetails.items.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-4 break-words">{item.description}</td>
+                      <td className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+                        {(() => {
+                          const startDate = new Date(paymentDetails.invoice.date);
+                          const expiryDate = new Date(startDate);
+                          expiryDate.setDate(startDate.getDate() + paymentDetails.plan.duration);
+                          return formatDate(expiryDate.toISOString());
+                        })()}
+                      </td>
+                      <td className="border border-gray-300 px-3 sm:px-6 py-2 sm:py-4 text-right whitespace-nowrap">{formatCurrency(item.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Section 5: Amount Calculation with GST Breakdown - EXACTLY like PaymentSuccessPage */}
-          <div className="ml-auto max-w-md">
-            <div className="space-y-4">
+          {/* Section 5: Amount Calculation with GST Breakdown - Responsive */}
+          <div className="flex justify-end mb-6 sm:mb-8">
+            <div className="w-full sm:w-80 md:w-96 space-y-2 sm:space-y-3">
               {/* Subtotal */}
-              <div className="flex justify-between">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span className="text-gray-700 font-medium">Subtotal</span>
                 <span className="text-gray-900">{formatCurrency(paymentDetails.payment.amount)}</span>
               </div>
 
               {/* Discount */}
               {paymentDetails.payment.discount > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-xs sm:text-sm text-green-600">
                   <span className="font-medium">Discount</span>
                   <span className="font-medium">-{formatCurrency(paymentDetails.payment.discount)}</span>
                 </div>
@@ -347,22 +349,13 @@ export default function InvoiceDetailsPage() {
                       paymentDetails.payment.sgst_amount > 0 &&
                       paymentDetails.payment.cgst_amount > 0 && (
                         <>
-                          <div className="flex justify-between">
-                            <span className="text-gray-700">
-                              CGST ({paymentDetails.payment.gst_percentage / 2}%)
-                            </span>
-                            <span className="text-gray-900">
-                              {formatCurrency(paymentDetails.payment.cgst_amount)}
-                            </span>
+                          <div className="flex justify-between text-xs sm:text-sm text-gray-700">
+                            <span>CGST ({paymentDetails.payment.gst_percentage / 2}%)</span>
+                            <span>{formatCurrency(paymentDetails.payment.cgst_amount)}</span>
                           </div>
-
-                          <div className="flex justify-between">
-                            <span className="text-gray-700">
-                              SGST ({paymentDetails.payment.gst_percentage / 2}%)
-                            </span>
-                            <span className="text-gray-900">
-                              {formatCurrency(paymentDetails.payment.sgst_amount)}
-                            </span>
+                          <div className="flex justify-between text-xs sm:text-sm text-gray-700">
+                            <span>SGST ({paymentDetails.payment.gst_percentage / 2}%)</span>
+                            <span>{formatCurrency(paymentDetails.payment.sgst_amount)}</span>
                           </div>
                         </>
                       )}
@@ -370,37 +363,31 @@ export default function InvoiceDetailsPage() {
                     {/* IGST (different state) */}
                     {paymentDetails.payment.igst_amount !== undefined &&
                       paymentDetails.payment.igst_amount > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">
-                            IGST ({paymentDetails.payment.gst_percentage}%)
-                          </span>
-                          <span className="text-gray-900">
-                            {formatCurrency(paymentDetails.payment.igst_amount)}
-                          </span>
+                        <div className="flex justify-between text-xs sm:text-sm text-gray-700">
+                          <span>IGST ({paymentDetails.payment.gst_percentage}%)</span>
+                          <span>{formatCurrency(paymentDetails.payment.igst_amount)}</span>
                         </div>
                       )}
 
                     {/* Total GST */}
-                    <div className="flex justify-between border-t pt-2">
-                      <span className="text-gray-700 font-medium">Total GST</span>
-                      <span className="text-gray-900 font-medium">
-                        {formatCurrency(paymentDetails.payment.gst_amount ?? 0)}
-                      </span>
+                    <div className="flex justify-between border-t pt-1 sm:pt-2 text-xs sm:text-sm text-gray-800">
+                      <span className="font-medium">Total GST</span>
+                      <span className="font-medium">{formatCurrency(paymentDetails.payment.gst_amount ?? 0)}</span>
                     </div>
                   </>
                 )}
 
               {/* Inclusive GST Display */}
               {paymentDetails.payment.gst_type === "inclusive" && (paymentDetails.payment.gst_amount ?? 0) > 0 && (
-                <div className="flex justify-between text-gray-700">
+                <div className="flex justify-between text-xs sm:text-sm text-gray-700">
                   <span className="font-medium">GST ({paymentDetails.payment.gst_percentage}% Inclusive)</span>
                   <span className="font-medium">{formatCurrency(paymentDetails.payment.gst_amount ?? 0)}</span>
                 </div>
               )}
 
               {/* Grand Total */}
-              <div className="border-t-2 pt-4 mt-4">
-                <div className="flex justify-between text-xl font-bold">
+              <div className="border-t-2 pt-3 sm:pt-4 mt-2 sm:mt-4">
+                <div className="flex justify-between text-base sm:text-lg md:text-xl font-bold">
                   <span>Total Amount</span>
                   <span className="text-blue-700">{formatCurrency(paymentDetails.payment.total)}</span>
                 </div>
@@ -409,66 +396,66 @@ export default function InvoiceDetailsPage() {
           </div>
 
           {/* Section 6: Footer Information */}
-          <div className="mt-12 pt-8 border-t border-gray-300">
-            <div className="mb-4">
-              <p className="text-gray-900">
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-300">
+            <div className="mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-gray-900">
                 <span className="font-bold">Amount In Words:</span> {paymentDetails.payment.amount_in_words}
               </p>
             </div>
-            <p className="text-sm italic text-gray-600 mb-4">
-              This is a computer generated invoice hence no signature is required.
+            <p className="text-xs sm:text-sm italic text-gray-600 mb-3 sm:mb-4">
+              This is a computer generated invoice and does not require a physical signature.
             </p>
-            <p className="text-xl font-bold text-gray-900 text-center">
+            <p className="text-lg sm:text-xl font-bold text-gray-900 text-center">
               Thank you for your business!
             </p>
           </div>
 
-          {/* Section 7: Action Buttons */}
-          <div className="flex gap-3 mt-8 print:hidden">
+          {/* Section 7: Action Buttons - Responsive */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-6 sm:mt-8 print:hidden">
             <button
               onClick={handleDownloadInvoice}
-              className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm"
             >
-              <Download size={18} />
+              <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
               Download PDF
             </button>
             <button
               onClick={handlePrintInvoice}
-              className="flex items-center gap-2 px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm"
             >
-              <Printer size={18} />
+              <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
               Print
             </button>
             <button
               onClick={handleEmailInvoice}
-              className="flex items-center gap-2 px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm"
             >
-              <Mail size={18} />
+              <Mail size={16} className="sm:w-[18px] sm:h-[18px]" />
               Email
             </button>
           </div>
         </div>
 
-        {/* Section 8: Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center print:hidden">
+        {/* Section 8: Navigation Buttons - Responsive */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center print:hidden">
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg"
+            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg text-xs sm:text-sm"
           >
-            <Home size={20} className="mr-2" />
+            <Home size={18} className="sm:w-5 sm:h-5" />
             Go to Dashboard
           </Link>
           <Link
             href="/plans"
-            className="inline-flex items-center justify-center px-8 py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all text-xs sm:text-sm"
           >
             View Other Plans
           </Link>
           <Link
             href="/purchase-history"
-            className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all text-xs sm:text-sm"
           >
-            <ArrowLeft size={20} className="mr-2" />
+            <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
             Back to History
           </Link>
         </div>

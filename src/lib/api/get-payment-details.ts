@@ -1,4 +1,5 @@
-"use server";
+// get-payment-details.ts
+//"use server";
 
 import axios from "axios";
 import { apiUrl } from "@/config";
@@ -64,9 +65,12 @@ export interface PaymentDetails {
 
 export const getPaymentDetails = async (invoiceNumber: string): Promise<{ success: boolean; data?: PaymentDetails; message?: string }> => {
   try {
-    const res = await axios.get(`${apiUrl}/seller/payment/get-payment-details.php?invoice=${invoiceNumber}`);
+    const res = await axios.get(`${apiUrl}/seller/payment/get-payment-details.php?invoice=${invoiceNumber}`, {
+      withCredentials: true // CRITICAL: This sends cookies for authentication
+    });
     return res.data;
   } catch (error) {
+    console.error("Error fetching payment details:", error);
     return {
       success: false,
       message: "Error fetching payment details"
@@ -76,12 +80,24 @@ export const getPaymentDetails = async (invoiceNumber: string): Promise<{ succes
 
 export const downloadInvoicePDF = async (invoiceNumber: string): Promise<Blob> => {
   try {
-    const response = await fetch(`${apiUrl}/seller/payment/generate-invoice-pdf.php?invoice=${invoiceNumber}`);
+    const response = await fetch(`${apiUrl}/seller/payment/generate-invoice-pdf.php?invoice=${invoiceNumber}`, {
+      credentials: 'include' // CRITICAL: This sends cookies for authentication
+    });
+    
     if (!response.ok) {
+      // Try to get error message from response
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        throw new Error(errorData.message || 'Failed to download invoice');
+      }
       throw new Error('Failed to download invoice');
     }
+    
     return await response.blob();
   } catch (error) {
+    console.error("Error downloading invoice:", error);
     throw new Error('Error downloading invoice');
   }
 };
@@ -91,9 +107,12 @@ export const emailInvoice = async (invoiceNumber: string, email: string): Promis
     const res = await axios.post(`${apiUrl}/seller/payment/email-invoice.php`, {
       invoice_number: invoiceNumber,
       email
+    }, {
+      withCredentials: true // CRITICAL: This sends cookies for authentication
     });
     return res.data;
   } catch (error) {
+    console.error("Error sending email:", error);
     return {
       success: false,
       message: "Error sending email"

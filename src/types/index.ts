@@ -247,7 +247,7 @@ export type Department = {
 // types/index.ts
 export interface PurchaseHistory {
   id: number;
-  invoice_number: number;
+  invoice_number: string;
   plan_id: number;
   plan_name?: string;
   user_id: number;
