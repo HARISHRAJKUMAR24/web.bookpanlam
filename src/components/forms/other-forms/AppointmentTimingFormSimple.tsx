@@ -21,127 +21,162 @@ type Props = {
 };
 
 export default function AppointmentTimingFormSimple({ value, onChange }: Props) {
-  const [fromTime, setFromTime] = useState("");
-  const [toTime, setToTime] = useState("");
-  const [fromPeriod, setFromPeriod] = useState<"AM" | "PM">("AM");
-  const [toPeriod, setToPeriod] = useState<"AM" | "PM">("AM");
+  // State for 24-hour format (for input fields)
+  const [fromTime24, setFromTime24] = useState("");
+  const [toTime24, setToTime24] = useState("");
 
-  // Parse initial values from props
+  // Convert 12h to 24h format
+  const convertTo24Hour = (time12: string, period: "AM" | "PM"): string => {
+    if (!time12) return "";
+    const [hours, minutes] = time12.split(":");
+    let hour = parseInt(hours, 10);
+    
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+    
+    return `${hour.toString().padStart(2, "0")}:${minutes}`;
+  };
+
+  // Convert 24h to 12h format
+  const convertTo12Hour = (time24: string): { time: string; period: "AM" | "PM" } => {
+    if (!time24) return { time: "", period: "AM" };
+    
+    const [hours, minutes] = time24.split(":");
+    const hour = parseInt(hours, 10);
+    const period = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    
+    return {
+      time: `${hour12.toString().padStart(2, "0")}:${minutes}`,
+      period
+    };
+  };
+
+  // Initialize from props
   useEffect(() => {
-    console.log("AppointmentTimingFormSimple - Initial value received:", value);
-    
     if (value?.fromFormatted?.time) {
-      console.log("Setting from time:", value.fromFormatted.time, value.fromFormatted.period);
-      setFromTime(value.fromFormatted.time);
-      setFromPeriod(value.fromFormatted.period || "AM");
+      setFromTime24(convertTo24Hour(value.fromFormatted.time, value.fromFormatted.period));
     }
-    
     if (value?.toFormatted?.time) {
-      console.log("Setting to time:", value.toFormatted.time, value.toFormatted.period);
-      setToTime(value.toFormatted.time);
-      setToPeriod(value.toFormatted.period || "AM");
+      setToTime24(convertTo24Hour(value.toFormatted.time, value.toFormatted.period));
     }
   }, [value]);
 
-  // Handle time change
-  const handleTimeChange = (
-    type: "from" | "to",
-    timeValue: string,
-    periodValue: "AM" | "PM"
-  ) => {
-    console.log(`Time change - ${type}: ${timeValue} ${periodValue}`);
+  // Handle time changes
+  const handleFromTimeChange = (time24: string) => {
+    setFromTime24(time24);
+    const from12 = convertTo12Hour(time24);
+    const to12 = convertTo12Hour(toTime24);
     
-    if (type === "from") {
-      setFromTime(timeValue);
-      setFromPeriod(periodValue);
-    } else {
-      setToTime(timeValue);
-      setToPeriod(periodValue);
-    }
+    onChange({
+      appointmentTimeFromFormatted: from12,
+      appointmentTimeToFormatted: to12
+    });
+  };
+
+  const handleToTimeChange = (time24: string) => {
+    setToTime24(time24);
+    const from12 = convertTo12Hour(fromTime24);
+    const to12 = convertTo12Hour(time24);
     
-    // Send updated values to parent
-    const newTiming = {
-      appointmentTimeFromFormatted: {
-        time: type === "from" ? timeValue : fromTime,
-        period: type === "from" ? periodValue : fromPeriod
-      },
-      appointmentTimeToFormatted: {
-        time: type === "to" ? timeValue : toTime,
-        period: type === "to" ? periodValue : toPeriod
-      }
-    };
-    
-    console.log("Calling onChange with:", newTiming);
-    onChange(newTiming);
+    onChange({
+      appointmentTimeFromFormatted: from12,
+      appointmentTimeToFormatted: to12
+    });
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
-            <h3 className="font-medium text-gray-900">Appointment Timings</h3>
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      {/* Header - Responsive */}
+      <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white 
+                      px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="p-1.5 sm:p-2 bg-blue-50 rounded-lg">
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-blue-600" />
+          </div>
+          <div>
+            <h2 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900">
+              Appointment Timings
+            </h2>
+            <p className="text-xs sm:text-xs md:text-sm text-gray-500 mt-0.5">
+              Set daily appointment availability
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        <div className="space-y-6">
+      {/* Content - Responsive */}
+      <div className="p-3 sm:p-4 md:p-6 lg:p-8">
+        <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8">
+          
           {/* Start Time */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="block text-xs sm:text-sm md:text-base font-medium text-gray-700">
               Appointment Start Time
+              <span className="text-[10px] sm:text-xs text-gray-400 ml-1 sm:ml-2">
+                (24h format)
+              </span>
             </label>
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <input
-                  type="time"
-                  value={fromTime}
-                  onChange={(e) => handleTimeChange("from", e.target.value, fromPeriod)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="w-24">
-                <select
-                  value={fromPeriod}
-                  onChange={(e) => handleTimeChange("from", fromTime, e.target.value as "AM" | "PM")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
+            <div className="relative">
+              <input
+                type="time"
+                value={fromTime24}
+                onChange={(e) => handleFromTimeChange(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 
+                         text-xs sm:text-sm md:text-base 
+                         border border-gray-300 rounded-lg 
+                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                         bg-white hover:border-gray-400 transition-colors"
+                placeholder="--:--"
+              />
+              {fromTime24 && (
+                <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 
+                              text-[10px] sm:text-xs md:text-sm 
+                              text-gray-500 bg-white/90 px-1.5 sm:px-2 py-0.5 sm:py-1 
+                              rounded border border-gray-200">
+                  {convertTo12Hour(fromTime24).time} {convertTo12Hour(fromTime24).period}
+                </div>
+              )}
             </div>
+            {/* Mobile-friendly hint */}
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-1 sm:hidden">
+              Tap to select time (24-hour format)
+            </p>
           </div>
 
           {/* End Time */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="block text-xs sm:text-sm md:text-base font-medium text-gray-700">
               Appointment End Time
+              <span className="text-[10px] sm:text-xs text-gray-400 ml-1 sm:ml-2">
+                (24h format)
+              </span>
             </label>
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <input
-                  type="time"
-                  value={toTime}
-                  onChange={(e) => handleTimeChange("to", e.target.value, toPeriod)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="w-24">
-                <select
-                  value={toPeriod}
-                  onChange={(e) => handleTimeChange("to", toTime, e.target.value as "AM" | "PM")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
+            <div className="relative">
+              <input
+                type="time"
+                value={toTime24}
+                onChange={(e) => handleToTimeChange(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 
+                         text-xs sm:text-sm md:text-base 
+                         border border-gray-300 rounded-lg 
+                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                         bg-white hover:border-gray-400 transition-colors"
+                placeholder="--:--"
+              />
+              {toTime24 && (
+                <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 
+                              text-[10px] sm:text-xs md:text-sm 
+                              text-gray-500 bg-white/90 px-1.5 sm:px-2 py-0.5 sm:py-1 
+                              rounded border border-gray-200">
+                  {convertTo12Hour(toTime24).time} {convertTo12Hour(toTime24).period}
+                </div>
+              )}
             </div>
+            {/* Mobile-friendly hint */}
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-1 sm:hidden">
+              Tap to select time (24-hour format)
+            </p>
           </div>
 
         </div>

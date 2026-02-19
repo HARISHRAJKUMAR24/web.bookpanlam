@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { uploadBannerImage } from "@/lib/api/banner-upload";
+import { uploadBannerImage, deleteBannerImage} from "@/lib/api/banner-upload";
 import { uploadsUrl } from "@/config";
 
 interface Banner {
@@ -93,11 +93,25 @@ const BannersUpload = ({ banners, setBanners }: Props) => {
     }
   };
 
-  /* ================= REMOVE ================= */
-  const removeBanner = (index: number) => {
-    setBanners((prev) => prev.filter((_, i) => i !== index));
-    toast.success("Banner removed");
-  };
+const removeBanner = async (index: number) => {
+  try {
+    const bannerToDelete = banners[index];
+    
+    // Call API to delete from server
+    const res = await deleteBannerImage(bannerToDelete.path);
+    
+    if (res?.success) {
+      // Remove from UI only if server deletion succeeded
+      setBanners((prev) => prev.filter((_, i) => i !== index));
+      toast.success("Banner removed successfully");
+    } else {
+      toast.error(res?.message || "Failed to delete banner");
+    }
+  } catch (error) {
+    toast.error("Error deleting banner");
+    console.error("Delete error:", error);
+  }
+};
 
   /* ================= REORDER ================= */
   const moveBanner = (index: number, dir: "up" | "down") => {

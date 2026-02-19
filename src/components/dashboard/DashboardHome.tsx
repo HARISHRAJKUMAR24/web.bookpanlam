@@ -111,10 +111,10 @@ const DashboardHome = async () => {
       {showRenewalMessage && (
         <div
           className={`rounded-lg md:rounded-xl p-4 sm:p-5 md:p-6 ${renewalMessageType === "danger"
-              ? "bg-gradient-to-r from-red-500 to-red-600"
-              : renewalMessageType === "warning"
-                ? "bg-gradient-to-r from-amber-500 to-amber-600"
-                : "bg-gradient-to-r from-blue-500 to-blue-600"
+            ? "bg-gradient-to-r from-red-500 to-red-600"
+            : renewalMessageType === "warning"
+              ? "bg-gradient-to-r from-amber-500 to-amber-600"
+              : "bg-gradient-to-r from-blue-500 to-blue-600"
             } text-white shadow-lg`}
         >
           <div className="text-center max-w-xl mx-auto px-2 sm:px-4">
@@ -131,10 +131,10 @@ const DashboardHome = async () => {
               <a
                 href="/all-plans"
                 className={`px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-lg font-bold uppercase tracking-wide transition-all duration-300 text-xs sm:text-sm md:text-base ${renewalMessageType === "danger"
-                    ? "bg-white text-red-600 hover:bg-gray-100"
-                    : renewalMessageType === "warning"
-                      ? "bg-white text-amber-600 hover:bg-gray-100"
-                      : "bg-white text-blue-600 hover:bg-gray-100"
+                  ? "bg-white text-red-600 hover:bg-gray-100"
+                  : renewalMessageType === "warning"
+                    ? "bg-white text-amber-600 hover:bg-gray-100"
+                    : "bg-white text-blue-600 hover:bg-gray-100"
                   }`}
               >
                 {planStatus?.plan_expired ? "Renew Now" : "Upgrade Now"}
@@ -199,11 +199,6 @@ const DashboardHome = async () => {
               Quick Links
             </h3>
             <div className="space-y-2 sm:space-y-3">
-              <CopyLink
-                text="Site Link"
-                link={user?.siteSlug ? `${siteUrl}/${user.siteSlug}` : "#"}
-                disabled={!user?.siteSlug}
-              />
 
               <LinkCard
                 title={`${overviewData.totalAppointments} Appointments`}
@@ -216,6 +211,29 @@ const DashboardHome = async () => {
                 title="Explore Reports"
                 icon={<Chart size="18" className="sm:w-5 sm:h-5" />}
                 link="/reports"
+                compact={true}
+              />
+
+              <LinkCard
+                title="Visit your Website"
+                icon={
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                    <Image
+                      src={
+                        user?.siteSettings?.logo_url
+                          ? user.siteSettings.logo_url
+                          : "/no-logo-icon.svg"
+                      }
+                      alt="Ztorespot"
+                      width={32}
+                      height={32}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                }
+                link={user?.siteSlug ? `${siteUrl}/${user.siteSlug}` : "#"}
+                className="!bg-emerald-600 text-white hover:!bg-emerald-700"
+
                 compact={true}
               />
 

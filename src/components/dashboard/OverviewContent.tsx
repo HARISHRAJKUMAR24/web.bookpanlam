@@ -189,54 +189,6 @@ const DashboardHome = async () => {
             </div>
           </div>
         </div>
-
-        {/* Quick Links Section */}
-        <div className="lg:w-[30%] xl:w-[30%] space-y-3 md:space-y-4 w-full">
-          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-5">
-            <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-3 md:mb-4">
-              Quick Links
-            </h3>
-            <div className="space-y-3">
-              <CopyLink
-                text="Site Link"
-                link={user?.siteSlug ? `${siteUrl}/${user.siteSlug}` : "#"}
-                disabled={!user?.siteSlug}
-              />
-
-              <LinkCard
-                title={`${overviewData.totalAppointments} Appointments`}
-                icon={<Calendar size="20" />}
-                link="/appointments"
-                compact={true}
-              />
-
-              <LinkCard
-                title="Explore Reports"
-                icon={<Chart size="20" />}
-                link="/reports"
-                compact={true}
-              />
-
-              <LinkCard
-                title="Start your online store"
-                icon={
-                  <div className="w-8 h-8 flex items-center justify-center rounded-lg overflow-hidden">
-                    <Image
-                      src={`${siteimages_uploadsUrl}/ztorespot_logo.jpg`}
-                      alt="Ztorespot"
-                      width={32}
-                      height={32}
-                      className="object-cover"
-                    />
-                  </div>
-                }
-                link="https://ztorespot.com"
-                className="!bg-purple-500 text-white hover:!bg-purple-600"
-                compact={true}
-              />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Mobile-only additional stats (optional) */}

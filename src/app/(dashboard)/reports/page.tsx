@@ -6,8 +6,6 @@ import { DoctorFilter } from "@/components/filters/reports/doctor-filter";
 import OverviewCard from "@/components/cards/reports/overview-card";
 
 import AppointmentFilters from "@/components/filters/appointments-filter";
-import { DataTable } from "@/components/tables/appointments-table/data-table";
-import { columns } from "@/components/tables/appointments-table/columns";
 
 type SearchParams = appointmentsParams & {
   doctor?: string;
@@ -111,10 +109,6 @@ const reports =
           ))}
       </div>
 
-      <div className="space-y-5 mt-10">
-        <AppointmentFilters data={appointments.records || []} />
-        <DataTable columns={columns} data={appointments} />
-      </div>
     </div>
   );
 };
