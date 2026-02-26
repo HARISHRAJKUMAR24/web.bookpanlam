@@ -1,4 +1,3 @@
-"use server";
 
 import { apiUrl } from "@/config";
 import {
@@ -8,7 +7,6 @@ import {
   sendOtp as sendOtpType,
 } from "@/types";
 import axios from "axios";
-import { cookies } from "next/headers";
 
 const route = "/seller/auth";
 
@@ -101,50 +99,8 @@ export const forgotPassword = async (options: forgotPasswordData) => {
 /* -------------------------------
    GET CURRENT USER (🔥 IMPORTANT)
 --------------------------------*/
-export const currentUser = async () => {
-  const token = cookies().get("token")?.value;
-  if (!token) return null;
 
-  try {
-    const res = await fetch(`${apiUrl}/users/user-with-token.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ token }),
-      cache: "no-store", // 🚨 THIS FIXES EVERYTHING
-    });
 
-    const raw = await res.text();
-    let json;
-
-    try {
-      json = JSON.parse(raw);
-    } catch {
-      console.log("INVALID JSON RESPONSE:", raw);
-      return null;
-    }
-
-    if (!json.success || !json.data) return null;
-
-    const u = json.data;
-
-    return {
-      id: u.id,
-      user_id: u.user_id,
-      name: u.name,
-      email: u.email,
-      phone: u.phone,
-      image: u.image,
-      siteName: u.site_name,
-siteSlug: u.site_slug,
-      country: u.country,
-      service_type_id: u.service_type_id,
-    };
-  } catch (err) {
-    console.log("currentUser error:", err);
-    return null;
-  }
-};
 
 
 export const logoutUser = async () => {
@@ -152,15 +108,18 @@ export const logoutUser = async () => {
     const res = await fetch(`${apiUrl}/seller/auth/logout.php`, {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
-    
-    const data = await res.json();
-    return data;
+
+    const text = await res.text();
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { success: true };
+    }
+
   } catch (error) {
     console.error('Logout API error:', error);
-    throw error;
+    return { success: false };
   }
 };

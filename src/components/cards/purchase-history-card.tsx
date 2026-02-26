@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
-import { downloadInvoicePDF } from "@/lib/api/get-payment-details"; // Import the function
+import { downloadInvoicePDF } from "@/lib/api/get-payment-details";
 
 interface PurchaseHistoryCardProps {
   id: number;
@@ -67,7 +67,6 @@ const PurchaseHistoryCard = ({
     }
   };
 
-  // Rest of your component remains the same...
   const getPaymentMethodBadge = (method: string) => {
     const methodLower = method.toLowerCase();
     if (methodLower.includes('razorpay')) return { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Razorpay' };
@@ -100,23 +99,26 @@ const PurchaseHistoryCard = ({
 
   const typeBadge = getTypeBadge();
 
+  // Format amount with Indian number formatting
+  const formattedAmount = amount.toLocaleString('en-IN');
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200 group h-full flex flex-col">
       <CardHeader className="bg-gradient-to-r from-gray-50 to-white pb-3 sm:pb-4 px-4 sm:px-6">
-        <div className="flex justify-between items-start gap-2">
-          <div className="space-y-1.5 sm:space-y-2 min-w-0 flex-1">
+        <div className="flex justify-between items-start gap-3">
+          <div className="space-y-1.5 sm:space-y-2 flex-1">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Receipt className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+              <span className="text-xs sm:text-sm font-medium text-gray-600">
                 Invoice #{invoice_number}
               </span>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-base sm:text-lg text-gray-900 line-clamp-2 break-words pr-2">
+              <h3 className="font-semibold text-base sm:text-lg text-gray-900 break-words">
                 {plan_name}
               </h3>
               {typeBadge && (
-                <Badge className={`${typeBadge.bg} ${typeBadge.text} border-0 text-xs`}>
+                <Badge className={`${typeBadge.bg} ${typeBadge.text} border-0 text-xs whitespace-nowrap`}>
                   {typeBadge.label}
                 </Badge>
               )}
@@ -124,7 +126,7 @@ const PurchaseHistoryCard = ({
           </div>
           <Badge 
             variant="outline" 
-            className="bg-green-50 text-green-700 border-green-200 text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 flex-shrink-0"
+            className="bg-green-50 text-green-700 border-green-200 text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 whitespace-nowrap"
           >
             {status}
           </Badge>
@@ -143,72 +145,83 @@ const PurchaseHistoryCard = ({
             <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
               {customer_name}
             </p>
-            <p className="text-xs sm:text-sm text-gray-500 truncate mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-500 truncate">
               {customer_email || 'No email provided'}
             </p>
           </div>
         </div>
 
-        {/* Amount and Payment Method */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
-              <IndianRupee className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
+        {/* Amount and Payment Method - Desktop: row, Mobile: stack */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          {/* Amount */}
+          <div className="flex items-center gap-2 flex-1">
+            <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <IndianRupee className="h-4 w-4 text-blue-600" />
             </div>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs text-gray-500">Amount</p>
-              <p className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-                {currency_symbol}{amount.toLocaleString('en-IN')}
+            <div>
+              <p className="text-xs text-gray-500">Amount</p>
+              <p className="font-semibold text-base sm:text-lg text-gray-900 whitespace-nowrap">
+                {currency_symbol}{formattedAmount}
               </p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
-              <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
+
+          {/* Divider - visible on desktop */}
+          <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
+
+          {/* Payment Method */}
+          <div className="flex items-center gap-2 flex-1">
+            <div className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
+              <CreditCard className="h-4 w-4 text-gray-600" />
             </div>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-xs text-gray-500">Payment</p>
-              <Badge className={`${methodStyle.bg} ${methodStyle.text} border-0 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 truncate max-w-full`}>
+            <div>
+              <p className="text-xs text-gray-500">Payment Method</p>
+              <Badge className={`${methodStyle.bg} ${methodStyle.text} border-0 text-xs sm:text-sm px-2 py-0.5 sm:px-2.5 sm:py-1 mt-0.5 whitespace-nowrap`}>
                 {methodStyle.label}
               </Badge>
             </div>
           </div>
         </div>
 
+        {/* Payment ID (if available) */}
+        {payment_id && payment_id !== 'N/A' && (
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 bg-gray-50 p-2 rounded-md">
+            <span className="font-medium text-gray-700">Payment ID:</span>
+            <span className="font-mono text-gray-600 break-all">{payment_id}</span>
+          </div>
+        )}
+
         {/* Date */}
-        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
           <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-          <span className="truncate">
+          <span>
             {formatDate(new Date(created_at), 'long')}
           </span>
         </div>
       </CardContent>
 
       {/* Actions */}
-      <CardFooter className="bg-gray-50 border-t p-3 sm:p-4 flex gap-2 mt-auto">
-        <Link href={`/purchase-history/${invoice_number}`} className="flex-1">
+      <CardFooter className="bg-gray-50 border-t p-3 sm:p-4 flex flex-col sm:flex-row gap-2 mt-auto">
+        <Link href={`/purchase-history/${invoice_number}`} className="w-full sm:flex-1">
           <Button 
             variant="default" 
             size="sm" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm h-8 sm:h-9"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm h-9"
           >
-            <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
-            <span className="truncate">View</span>
+            <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
+            View Details
           </Button>
         </Link>
         
         <Button
           variant="outline"
           size="sm"
-          className="flex-1 border-gray-300 hover:bg-white hover:border-blue-300 text-xs sm:text-sm h-8 sm:h-9"
+          className="w-full sm:flex-1 border-gray-300 hover:bg-white hover:border-blue-300 text-xs sm:text-sm h-9"
           onClick={handleDownloadInvoice}
           disabled={isDownloading}
         >
-          <Download className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5 flex-shrink-0 ${isDownloading ? 'animate-pulse' : ''}`} />
-          <span className="truncate">
-            {isDownloading ? 'Downloading...' : 'Download'}
-          </span>
+          <Download className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 flex-shrink-0 ${isDownloading ? 'animate-pulse' : ''}`} />
+          {isDownloading ? 'Downloading...' : 'Download Invoice'}
         </Button>
       </CardFooter>
     </Card>
