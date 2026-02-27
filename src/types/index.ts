@@ -1121,6 +1121,13 @@ export interface WebsiteSettingsData {
   navLinks?: NavLink[];
 }
 
+export interface DomainRequest {
+  domain: string;
+  status: 'pending' | 'approved' | 'rejected' | null;
+  requestedAt: string | null;
+}
+
+
 export interface WebsiteSettings {
   user_id: number;
   banners: any;
@@ -1129,6 +1136,8 @@ export interface WebsiteSettings {
   heroDescription: string;
   heroImage: string;
   navLinks: NavLink[];
+  customDomain?: string;
+  domainRequest?: DomainRequest;
 }
 
 export interface NavLink {

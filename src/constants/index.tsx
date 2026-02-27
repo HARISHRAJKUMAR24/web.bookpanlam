@@ -129,6 +129,11 @@ const WEBSITE_SETUP_LINKS = [
     href: "/website-setup/pages",
     icon: <Document />,
   },
+  {
+    label: "Domain Request",
+    href: "/website-setup/domain-request",
+    icon: <GlobalSearch />,
+  },
 ];
 
 const APPOINTMENT_STATUS = [
